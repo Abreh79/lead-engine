@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ lead.business_name }} | Premier {{ lead.niche }} Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+
+    <!-- Top Emergency Bar -->
+    <div class="bg-blue-900 text-white py-2 px-4 text-xs sm:text-sm font-semibold flex justify-between items-center max-w-7xl mx-auto">
+        <span><i class="fa-solid fa-clock text-amber-400 mr-2"></i> 24/7 Emergency {{ lead.niche }} Service Available</span>
+        <a href="tel:{{ lead.phone }}" class="hover:underline flex items-center"><i class="fa-solid fa-phone text-amber-400 mr-1 sm:mr-2"></i> {{ lead.phone }}</a>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="text-xl sm:text-2xl font-black text-blue-950 uppercase tracking-tight flex items-center">
+                <i class="fa-solid fa-screwdriver-wrench text-blue-600 mr-2"></i>
+                {{ lead.business_name }}
+            </div>
+            <a href="tel:{{ lead.phone }}" class="bg-amber-500 hover:bg-amber-600 text-blue-950 font-bold px-4 py-2 rounded-lg text-sm sm:text-base transition duration-200 shadow-sm flex items-center">
+                <i class="fa-solid fa-phone mr-2"></i> CALL NOW
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-950 text-white py-12 sm:py-20 px-4">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div>
+                <div class="inline-block bg-blue-800 text-blue-200 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-4">
+                    Top-Rated Local {{ lead.niche }} Experts
+                </div>
+                <h1 class="text-3xl sm:text-5xl font-extrabold leading-tight mb-4">
+                    Fast, Reliable <span class="text-amber-400">{{ lead.niche }}</span> Services You Can Trust.
+                </h1>
+                <p class="text-gray-300 text-base sm:text-lg mb-6">
+                    Licensed & Insured Professionals. Serving your local neighborhood with upfront pricing and zero hidden fees.
+                </p>
+                <div class="flex flex-wrap gap-4 items-center">
+                    <a href="tel:{{ lead.phone }}" class="bg-amber-500 hover:bg-amber-600 text-blue-950 font-black px-6 py-3 rounded-lg text-lg transition duration-200 shadow-lg flex items-center">
+                        <i class="fa-solid fa-phone mr-2"></i> {{ lead.phone }}
+                    </a>
+                    <a href="#quote-form" class="bg-white/10 hover:bg-white/20 text-white font-bold px-6 py-3 rounded-lg text-lg transition border border-white/20">
+                        Get Instant Quote
+                    </a>
+                </div>
+                <!-- Trust Ratings -->
+                <div class="mt-8 flex items-center space-x-4 border-t border-blue-800 pt-6">
+                    <div class="flex text-amber-400 text-lg">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <span class="text-sm font-semibold text-gray-200">
+                        {{ lead.review_count }} Verified Local Customer Reviews
+                    </span>
+                </div>
+            </div>
+
+            <!-- Instant Quote Form -->
+            <div id="quote-form" class="bg-white text-gray-900 p-6 sm:p-8 rounded-2xl shadow-2xl">
+                <h2 class="text-2xl font-bold text-blue-950 mb-2">Request Free Estimate</h2>
+                <p class="text-sm text-gray-600 mb-6">Fill out the form below for an instant response from our dispatch team.</p>
+                <form onsubmit="event.preventDefault(); alert('Thank you! Your estimate request has been submitted.');" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-700 mb-1">Full Name</label>
+                        <input type="text" placeholder="John Smith" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-700 mb-1">Phone Number</label>
+                        <input type="tel" placeholder="(555) 000-0000" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-700 mb-1">Service Needed</label>
+                        <select class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                            <option>Emergency {{ lead.niche }} Repair</option>
+                            <option>System Inspection & Maintenance</option>
+                            <option>New Installation / Replacement</option>
+                            <option>General Service Inquiry</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg text-lg transition duration-200 shadow-md">
+                        SUBMIT ESTIMATE REQUEST
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Badges Section -->
+    <section class="py-12 bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div class="p-4 bg-gray-50 rounded-xl">
+                <i class="fa-solid fa-shield-halved text-3xl text-blue-600 mb-2"></i>
+                <h3 class="font-bold text-gray-900">Licensed & Insured</h3>
+                <p class="text-xs text-gray-500 mt-1">100% Protection Guaranteed</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-xl">
+                <i class="fa-solid fa-bolt text-3xl text-amber-500 mb-2"></i>
+                <h3 class="font-bold text-gray-900">Fast Response</h3>
+                <p class="text-xs text-gray-500 mt-1">Same-Day Service Dispatch</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-xl">
+                <i class="fa-solid fa-hand-holding-dollar text-3xl text-green-600 mb-2"></i>
+                <h3 class="font-bold text-gray-900">Upfront Pricing</h3>
+                <p class="text-xs text-gray-500 mt-1">No Hidden Fees or Surprises</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-xl">
+                <i class="fa-solid fa-award text-3xl text-indigo-600 mb-2"></i>
+                <h3 class="font-bold text-gray-900">5-Star Rated</h3>
+                <p class="text-xs text-gray-500 mt-1">Backed by Local Reviews</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-blue-950 text-gray-400 py-8 px-4 border-t border-blue-900 text-center text-sm">
+        <p class="mb-2 font-semibold text-white">&copy; 2026 {{ lead.business_name }}. All Rights Reserved.</p>
+        <p class="text-xs">Client Preview Generated by Local Service Client Acquisition Engine</p>
+    </footer>
+
+</body>
+</html>

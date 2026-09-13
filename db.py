@@ -64,6 +64,17 @@ def get_all_leads(only_broken=False, db_path=DB_PATH):
     conn.close()
     return rows
 
+def get_lead_by_id(lead_id, db_path=DB_PATH):
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM leads WHERE id = ?", (lead_id,))
+    row = cursor.fetchone()
+    conn.close()
+    if row:
+        return dict(row)
+    return None
+
 if __name__ == "__main__":
     init_db()
     print("Database initialized successfully at:", DB_PATH)
