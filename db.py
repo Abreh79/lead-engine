@@ -25,6 +25,14 @@ def init_db(db_path=DB_PATH):
     conn.commit()
     conn.close()
 
+def wipe_leads(db_path=DB_PATH):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM leads")
+    conn.commit()
+    conn.close()
+    print("[DB] Cleared all aggregate directory rows from SQLite database.")
+
 def save_lead(lead_data, db_path=DB_PATH):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
