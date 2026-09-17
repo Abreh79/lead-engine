@@ -94,6 +94,110 @@
         </div>
     </section>
 
+    <!-- 2026 GROWTH & PAYBACK MATH WIDGET -->
+    <section class="py-12 bg-slate-900 text-white border-y border-slate-800">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-8">
+                <div class="inline-block bg-amber-500/20 text-amber-400 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-2">
+                    Contractor ROI & Payback Calculator
+                </div>
+                <h2 class="text-2xl sm:text-4xl font-extrabold text-white">
+                    Growth & Payback Math for {{ lead.business_name }}
+                </h2>
+                <p class="text-gray-400 text-sm sm:text-base mt-2 max-w-2xl mx-auto">
+                    See how fast this 2026 mobile-first lead engine pays for itself based on real local benchmark job values.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+                <!-- Benchmarks Card -->
+                <div class="bg-slate-800/90 p-6 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-amber-400 mb-4 flex items-center">
+                            <i class="fa-solid fa-calculator mr-2"></i> Average {{ lead.niche }} Ticket Benchmarks
+                        </h3>
+                        {% if lead.niche == 'Roofing' %}
+                        <div class="space-y-4">
+                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
+                                <span class="text-xs uppercase text-gray-400 font-semibold block">Minor Repair / Leak Call</span>
+                                <span class="text-2xl font-black text-emerald-400">$950</span>
+                                <span class="text-xs text-gray-400 block mt-1">Average ticket for flashing, shingles, or leak repair.</span>
+                            </div>
+                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
+                                <span class="text-xs uppercase text-gray-400 font-semibold block">Full Roof Replacement</span>
+                                <span class="text-2xl font-black text-amber-400">$14,000</span>
+                                <span class="text-xs text-gray-400 block mt-1">Average ticket for complete tear-off & reroof job.</span>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="space-y-4">
+                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
+                                <span class="text-xs uppercase text-gray-400 font-semibold block">Service & Repair Call</span>
+                                <span class="text-2xl font-black text-emerald-400">$450</span>
+                                <span class="text-xs text-gray-400 block mt-1">Average ticket for emergency diagnostic & repair.</span>
+                            </div>
+                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
+                                <span class="text-xs uppercase text-gray-400 font-semibold block">Full System Replacement</span>
+                                <span class="text-2xl font-black text-amber-400">$12,500</span>
+                                <span class="text-xs text-gray-400 block mt-1">Average ticket for complete unit replacement / changeout.</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Breakeven Equation Card -->
+                <div class="bg-gradient-to-br from-blue-900/40 to-indigo-900/40 p-6 rounded-2xl border border-blue-500/30 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+                            <i class="fa-solid fa-chart-line mr-2 text-blue-400"></i> The Breakeven Equation
+                        </h3>
+                        <div class="bg-blue-950/80 p-5 rounded-xl border border-blue-800 text-center space-y-3">
+                            <p class="text-sm text-blue-200 font-medium">
+                                "At <span class="text-amber-400 font-bold">$550/mo</span>, 1 minor service call covers the entire month."
+                            </p>
+                            <div class="h-px bg-blue-800/80 my-2"></div>
+                            <p class="text-sm text-emerald-300 font-bold">
+                                "1 replacement job covers 2+ full years of this system."
+                            </p>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-4 leading-relaxed">
+                            Every missed call from a broken mobile site is a $450 to $14,000 job going directly to a competitor.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Plan Selector Card -->
+                <div class="bg-slate-800/90 p-6 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-emerald-400 mb-4 flex items-center">
+                            <i class="fa-solid fa-handshake mr-2"></i> Select Onboarding Option
+                        </h3>
+                        <div class="space-y-3">
+                            <button onclick="alert('Option A selected: $1,200 setup + $550/mo retainer. Contact Abreh at 573-881-3277 to activate.')" class="w-full text-left p-4 bg-slate-900 hover:bg-slate-950 border border-emerald-500/50 hover:border-emerald-400 rounded-xl transition group">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold text-emerald-400 uppercase">Option A: Standard Plan</span>
+                                    <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Popular</span>
+                                </div>
+                                <div class="text-lg font-black text-white mt-1">$1,200 setup + $550/mo</div>
+                                <div class="text-xs text-gray-400 mt-1">Full transfer, hosting & lead routing included.</div>
+                            </button>
+
+                            <button onclick="alert('Option B selected: $0 down + $695/mo (6-month agreement). Contact Abreh at 573-881-3277 to activate.')" class="w-full text-left p-4 bg-slate-900 hover:bg-slate-950 border border-blue-500/50 hover:border-blue-400 rounded-xl transition group">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold text-blue-400 uppercase">Option B: $0 Down Plan</span>
+                                    <span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded">Zero Risk</span>
+                                </div>
+                                <div class="text-lg font-black text-white mt-1">$0 down + $695/mo</div>
+                                <div class="text-xs text-gray-400 mt-1">6-month agreement. $0 upfront capital required.</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Trust Badges Section -->
     <section class="py-12 bg-white border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">

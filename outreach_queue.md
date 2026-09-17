@@ -1,70 +1,124 @@
-# LOCAL SERVICE COLD OUTREACH QUEUE 🎯
+# LOCAL CONTRACTOR COLD OUTREACH QUEUE (COLUMBIA & BOONE COUNTY 573)
 
-**Active Public Base URL**: `https://promotional-east-provided-dna.trycloudflare.com`
-Generated on broken mobile contractor targets (3 total qualified leads).
+**Active Persistent Public Base URL**: `https://cities-moves-specializing-historic.trycloudflare.com`
+Generated for qualified broken-mobile HVAC & Roofing shops.
 
-## Lead #31: Metro Emergency Plumbing & Drain [Plumbing]
-- **Phone**: (612) 555-8831
-- **Original URL**: http://httpbin.org/delay/5
-- **Public Mobile Preview Link**: https://promotional-east-provided-dna.trycloudflare.com/preview/31
+## Lead #34: MasterTech Plumbing, Heating & Cooling [HVAC]
+- **Phone**: 573-777-3660
+- **Trade**: HVAC
+- **Preview Link**: https://cities-moves-specializing-historic.trycloudflare.com/preview/34
 
-### 📱 COLD SMS (Under 200 Chars)
+### 📱 COLD SMS (162 Chars)
 ```
-Hey Metro Emergency Plumbing & Drain, your site is broken on mobile. Built a clean 2026 version here: https://promotional-east-provided-dna.trycloudflare.com/preview/31 Want the files?
+Hey MasterTech Team, mobile site has layout issues. Made a clean preview with ROI math: https://cities-moves-specializing-historic.trycloudflare.com/preview/34 Want to see?
 ```
-*(Char Count: 184 chars)*
 
 ### 📧 3-SENTENCE COLD EMAIL
 ```
-Subject: Mobile site mockup for Metro Emergency Plumbing & Drain
+Subject: Quick Mobile Site Mockup for MasterTech Plumbing, Heating & Cooling
 
-Hey Metro Emergency Plumbing & Drain team, while looking up local Plumbing pros in Minneapolis, I noticed your site has mobile responsiveness issues that cause prospective clients to bounce.
-I put together a fast, mobile-first preview site tailored for your business here: https://promotional-east-provided-dna.trycloudflare.com/preview/31
-No pressure at all—if you like the layout, I'm happy to hand over the files or help you put it live.
+Hey MasterTech Plumbing, Heating & Cooling team, while reviewing local HVAC pros in Columbia & Boone County, I noticed your site has mobile layout issues that cause prospective clients to bounce.
+I put together a fast, mobile-first 2026 preview site with an instant quote calculator and ROI math widget for your business here: https://cities-moves-specializing-historic.trycloudflare.com/preview/34
+No pressure at all—if you like the layout, I am happy to hand over the files or help you put it live.
+
+Best,
+Abreh
 ```
 
 ---
 
-## Lead #30: Apex Midwest Climate Control [HVAC]
-- **Phone**: (763) 555-9012
-- **Original URL**: http://neverssl.com
-- **Public Mobile Preview Link**: https://promotional-east-provided-dna.trycloudflare.com/preview/30
+## Lead #38: CoMo Roofing & Exteriors [Roofing]
+- **Phone**: 573-424-9111
+- **Trade**: Roofing
+- **Preview Link**: https://cities-moves-specializing-historic.trycloudflare.com/preview/38
 
-### 📱 COLD SMS (Under 200 Chars)
+### 📱 COLD SMS (159 Chars)
 ```
-Hey Apex Midwest Climate Control, your site is broken on mobile. Built a clean 2026 version here: https://promotional-east-provided-dna.trycloudflare.com/preview/30 Want the files?
+Hey CoMo Roofing, mobile site has layout issues. Made a clean preview with ROI math: https://cities-moves-specializing-historic.trycloudflare.com/preview/38 Want to see?
 ```
-*(Char Count: 180 chars)*
 
 ### 📧 3-SENTENCE COLD EMAIL
 ```
-Subject: Mobile site mockup for Apex Midwest Climate Control
+Subject: Quick Mobile Site Mockup for CoMo Roofing & Exteriors
 
-Hey Apex Midwest Climate Control team, while looking up local HVAC pros in Minneapolis, I noticed your site has mobile responsiveness issues that cause prospective clients to bounce.
-I put together a fast, mobile-first preview site tailored for your business here: https://promotional-east-provided-dna.trycloudflare.com/preview/30
-No pressure at all—if you like the layout, I'm happy to hand over the files or help you put it live.
+Hey CoMo Roofing & Exteriors team, while reviewing local Roofing pros in Columbia & Boone County, I noticed your site has mobile layout issues that cause prospective clients to bounce.
+I put together a fast, mobile-first 2026 preview site with an instant quote calculator and ROI math widget for your business here: https://cities-moves-specializing-historic.trycloudflare.com/preview/38
+No pressure at all—if you like the layout, I am happy to hand over the files or help you put it live.
+
+Best,
+Abreh
 ```
 
 ---
 
-## Lead #29: Twin City Pipe & Master Plumbing [Plumbing]
-- **Phone**: (651) 555-3411
-- **Original URL**: http://httpbin.org/status/404
-- **Public Mobile Preview Link**: https://promotional-east-provided-dna.trycloudflare.com/preview/29
+## Lead #39: Boone County Roofing [Roofing]
+- **Phone**: 573-881-8842
+- **Trade**: Roofing
+- **Preview Link**: https://cities-moves-specializing-historic.trycloudflare.com/preview/39
 
-### 📱 COLD SMS (Under 200 Chars)
+### 📱 COLD SMS (167 Chars)
 ```
-Hey Twin City Pipe & Master Plumbing, your site is broken on mobile. Built a clean 2026 version here: https://promotional-east-provided-dna.trycloudflare.com/preview/29 Want the files?
+Hey Boone County Roofing, mobile site has layout issues. Made a clean preview with ROI math: https://cities-moves-specializing-historic.trycloudflare.com/preview/39 Want to see?
 ```
-*(Char Count: 184 chars)*
 
 ### 📧 3-SENTENCE COLD EMAIL
 ```
-Subject: Mobile site mockup for Twin City Pipe & Master Plumbing
+Subject: Quick Mobile Site Mockup for Boone County Roofing
 
-Hey Twin City Pipe & Master Plumbing team, while looking up local Plumbing pros in Minneapolis, I noticed your site has mobile responsiveness issues that cause prospective clients to bounce.
-I put together a fast, mobile-first preview site tailored for your business here: https://promotional-east-provided-dna.trycloudflare.com/preview/29
-No pressure at all—if you like the layout, I'm happy to hand over the files or help you put it live.
+Hey Boone County Roofing team, while reviewing local Roofing pros in Columbia & Boone County, I noticed your site has mobile layout issues that cause prospective clients to bounce.
+I put together a fast, mobile-first 2026 preview site with an instant quote calculator and ROI math widget for your business here: https://cities-moves-specializing-historic.trycloudflare.com/preview/39
+No pressure at all—if you like the layout, I am happy to hand over the files or help you put it live.
+
+Best,
+Abreh
+```
+
+---
+
+## Lead #40: Mid-Missouri Roofing & Restoration [Roofing]
+- **Phone**: 573-698-2100
+- **Trade**: Roofing
+- **Preview Link**: https://cities-moves-specializing-historic.trycloudflare.com/preview/40
+
+### 📱 COLD SMS (167 Chars)
+```
+Hey Mid-Missouri Roofing, mobile site has layout issues. Made a clean preview with ROI math: https://cities-moves-specializing-historic.trycloudflare.com/preview/40 Want to see?
+```
+
+### 📧 3-SENTENCE COLD EMAIL
+```
+Subject: Quick Mobile Site Mockup for Mid-Missouri Roofing & Restoration
+
+Hey Mid-Missouri Roofing & Restoration team, while reviewing local Roofing pros in Columbia & Boone County, I noticed your site has mobile layout issues that cause prospective clients to bounce.
+I put together a fast, mobile-first 2026 preview site with an instant quote calculator and ROI math widget for your business here: https://cities-moves-specializing-historic.trycloudflare.com/preview/40
+No pressure at all—if you like the layout, I am happy to hand over the files or help you put it live.
+
+Best,
+Abreh
+```
+
+---
+
+## Lead #41: Ashland Trades & Roofing [Roofing]
+- **Phone**: 573-657-0092
+- **Trade**: Roofing
+- **Preview Link**: https://cities-moves-specializing-historic.trycloudflare.com/preview/41
+
+### 📱 COLD SMS (161 Chars)
+```
+Hey Ashland Trades, mobile site has layout issues. Made a clean preview with ROI math: https://cities-moves-specializing-historic.trycloudflare.com/preview/41 Want to see?
+```
+
+### 📧 3-SENTENCE COLD EMAIL
+```
+Subject: Quick Mobile Site Mockup for Ashland Trades & Roofing
+
+Hey Ashland Trades & Roofing team, while reviewing local Roofing pros in Columbia & Boone County, I noticed your site has mobile layout issues that cause prospective clients to bounce.
+I put together a fast, mobile-first 2026 preview site with an instant quote calculator and ROI math widget for your business here: https://cities-moves-specializing-historic.trycloudflare.com/preview/41
+No pressure at all—if you like the layout, I am happy to hand over the files or help you put it live.
+
+Best,
+Abreh
 ```
 
 ---
