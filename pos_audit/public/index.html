@@ -633,71 +633,142 @@ or provide the formal cancellation procedures for our account.
         let bizName = window.currentBusinessName || "";
 
         if (!letterText) {
-          const volume = parseFloat(volumeRange.value);
-          const fees = parseFloat(feesRange.value);
-          const junk = parseFloat(junkRange.value);
+          const volume = parseFloat(volumeRange.value) || 25000;
+          const fees = parseFloat(feesRange.value) || 850;
+          const junk = parseFloat(junkRange.value) || 125;
+          const txCount = parseInt(txRange.value) || 320;
           const effectiveRate = ((fees / volume) * 100).toFixed(2);
-          const txCount = parseInt(txRange.value);
           const interchange = (volume * 0.0175) + (txCount * 0.08);
           const spread = Math.max(0, fees - interchange).toFixed(2);
           const icPlusTotal = interchange + (volume * 0.0015) + (txCount * 0.07);
           const annualSavings = Math.max(0, (fees - icPlusTotal) * 12).toFixed(2);
+          const merchant = bizName || "[Merchant Business]";
 
-          letterText = `To: Merchant Account Retention / Pricing Department\nFrom: [Merchant]\nRe: Notice of Processing Cost Review & Rate Match Request\n\nWe have completed an independent forensic audit of our recent merchant processing statements.\nOur current effective rate has climbed to ${effectiveRate}%, representing a processor spread of $${spread}/mo over baseline interchange on $${volume.toLocaleString('en-US')} in volume.\n\nSpecifically, we have flagged $${junk.toFixed(2)}/mo in non-negotiable ancillary junk fee surcharges.\n\nWe have received a competitive, binding quote for transparent Interchange-Plus pricing at:\n  - Interchange + 0.15% (15 bps) + $0.07 per transaction\n  - $0.00 ancillary statement/portal/PCI non-compliance fees\n  - Projected annual cost reduction: $${parseFloat(annualSavings).toLocaleString('en-US')}\n\nPlease confirm in writing within 5 business days whether your office will adjust our schedule, or provide the formal cancellation procedures for our account.`;
+          letterText = `To: Merchant Account Retention / Pricing Department\nFrom: ${merchant}\nRe: Notice of Processing Cost Review & Rate Match Request\n\nWe have completed an independent forensic audit of our recent merchant processing statements.\nOur current effective rate has climbed to ${effectiveRate}%, representing a processor spread of $${parseFloat(spread).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}/mo over baseline interchange on $${volume.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} in volume.\n\nSpecifically, we have flagged non-negotiable fee concerns including:\n  - Ancillary junk fee surcharges & PCI non-compliance fees: $${parseFloat(junk).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}/mo\n  - Elevated non-qualified tier margins and padded transaction surcharges\n\nWe have received a competitive, binding quote for transparent Interchange-Plus pricing at:\n  - Interchange + 0.15% (15 bps) + $0.07 per transaction\n  - $0.00 ancillary statement/portal/PCI non-compliance fees\n  - Projected annual cost reduction: $${parseFloat(annualSavings).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}\n\nWe prefer to avoid the operational friction of reprogramming our terminals and re-routing batch settlements to a new acquiring partner. However, we require an immediate adjustment to match transparent Interchange-Plus terms and waive all assessed junk fees.\n\nPlease confirm in writing within 5 business days whether your office will adjust our schedule, or provide the formal cancellation procedures for our account.\n\nSincerely,\n${merchant} Management`;
         }
 
-        const container = document.createElement('div');
-        container.style.cssText = 'position: absolute; left: -9999px; top: 0; width: 750px; height: auto; min-height: auto; max-height: none; overflow: visible; padding: 24px; font-family: "Helvetica Neue", Arial, sans-serif; color: #0f172a; background: #ffffff; line-height: 1.5; box-sizing: border-box;';
+        // Parse extracted details from letterText or globals
+        let toText = "Merchant Account Retention / Pricing Department";
+        let fromText = bizName || "Merchant Principal";
+        let reText = "Notice of Processing Cost Review & Rate Match Request";
 
         const lines = letterText.split('\n');
-        const formattedLines = lines.map(line => {
-          const trimmed = line.trim();
-          if (!trimmed) return '<div style="height: 6px;"></div>';
-          if (trimmed.startsWith('To:') || trimmed.startsWith('From:') || trimmed.startsWith('Re:')) {
-            const parts = trimmed.split(':');
-            return `<p style="margin: 3px 0; font-size: 13px;"><strong style="color: #0284c7;">${parts[0]}:</strong>${parts.slice(1).join(':')}</p>`;
+        const bodyElements = [];
+        let inSignature = false;
+
+        for (let i = 0; i < lines.length; i++) {
+          const rawLine = lines[i];
+          const trimmed = rawLine.trim();
+          if (!trimmed) continue;
+
+          if (trimmed.startsWith('To:')) {
+            toText = trimmed.replace(/^To:\s*/, '').trim() || toText;
+            continue;
           }
+          if (trimmed.startsWith('From:')) {
+            fromText = trimmed.replace(/^From:\s*/, '').trim() || fromText;
+            continue;
+          }
+          if (trimmed.startsWith('Re:')) {
+            reText = trimmed.replace(/^Re:\s*/, '').trim() || reText;
+            continue;
+          }
+          if (trimmed.startsWith('Sincerely,') || trimmed.endsWith('Management')) {
+            inSignature = true;
+            continue;
+          }
+          if (inSignature) continue;
+
           if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
-            return `<li style="margin: 3px 0 3px 18px; font-size: 12px; color: #334155;">${trimmed.substring(1).trim()}</li>`;
+            const bulletContent = trimmed.replace(/^[\s\-•]+/, '').trim();
+            bodyElements.push(`
+              <div style="margin: 4px 0 4px 16px; font-size: 12px; color: #1e293b; display: flex; align-items: flex-start; line-height: 1.5;">
+                <span style="color: #0284c7; font-weight: bold; margin-right: 8px; font-size: 14px; line-height: 1;">•</span>
+                <span>${bulletContent}</span>
+              </div>
+            `);
+          } else if (trimmed.includes('5 business days') || trimmed.includes('confirm in writing')) {
+            bodyElements.push(`
+              <div style="background: #f0f9ff; border-left: 4px solid #0284c7; padding: 12px 16px; margin: 16px 0; border-radius: 0 6px 6px 0; color: #0369a1; font-weight: 600; font-size: 12px; line-height: 1.5;">
+                ${trimmed}
+              </div>
+            `);
+          } else {
+            bodyElements.push(`
+              <p style="margin: 10px 0; font-size: 12px; line-height: 1.6; color: #1e293b; text-align: justify;">
+                ${trimmed}
+              </p>
+            `);
           }
-          if (trimmed.toUpperCase().includes('MERCHANT PROCESSING') || trimmed.includes('===') || trimmed.includes('---')) {
-            return '';
-          }
-          if (trimmed.startsWith('Sincerely,')) {
-            return `<p style="margin: 12px 0 2px 0; font-size: 12px; font-weight: 600; color: #0f172a;">${line}</p>`;
-          }
-          return `<p style="margin: 6px 0; font-size: 12px; text-align: justify; color: #1e293b;">${line}</p>`;
-        }).join('');
+        }
+
+        const dateStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+        const container = document.createElement('div');
+        container.id = 'pdf-export-container';
+        container.style.cssText = 'position: fixed; top: 0; left: 0; width: 750px; height: auto; min-height: auto; max-height: none; overflow: visible; padding: 32px; font-family: "Helvetica Neue", Arial, sans-serif; color: #0f172a; background: #ffffff; background-color: #ffffff; line-height: 1.5; box-sizing: border-box; z-index: -9999; opacity: 1;';
 
         container.innerHTML = `
-          <div style="border-bottom: 2px solid #0284c7; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <h1 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: -0.5px;">Merchant Fee Reduction Demand</h1>
-              <p style="font-size: 11px; color: #64748b; margin: 2px 0 0 0;">Forensic Rate Audit & Binding Quote Rate Match Request</p>
-            </div>
-            <div style="text-align: right;">
-              <span style="display: inline-block; background: #e0f2fe; border: 1px solid #bae6fd; color: #0369a1; font-weight: 700; font-size: 10px; padding: 3px 8px; border-radius: 4px;">FORMAL NOTICE</span>
+          <div style="border-bottom: 2px solid #0284c7; padding-bottom: 12px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: -0.5px;">Merchant Account Retention Demand</h1>
+                <p style="font-size: 11px; color: #0284c7; font-weight: 700; margin: 4px 0 0 0; text-transform: uppercase; letter-spacing: 0.5px;">Forensic Rate Audit & Binding Quote Match Request</p>
+              </div>
+              <div style="text-align: right;">
+                <span style="display: inline-block; background: #e0f2fe; border: 1px solid #0284c7; color: #0369a1; font-weight: 800; font-size: 10px; padding: 4px 10px; border-radius: 4px; text-transform: uppercase;">FORMAL RATE NOTICE</span>
+              </div>
             </div>
           </div>
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 12px; overflow: visible; height: auto;">
-            ${formattedLines}
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 16px; margin-bottom: 20px; color: #0f172a;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+              <tr>
+                <td style="padding: 3px 0; width: 75px; font-weight: 700; color: #0284c7;">TO:</td>
+                <td style="padding: 3px 0; font-weight: 600; color: #0f172a;">${toText}</td>
+              </tr>
+              <tr>
+                <td style="padding: 3px 0; font-weight: 700; color: #0284c7;">FROM:</td>
+                <td style="padding: 3px 0; font-weight: 600; color: #0f172a;">${fromText}</td>
+              </tr>
+              <tr>
+                <td style="padding: 3px 0; font-weight: 700; color: #0284c7;">DATE:</td>
+                <td style="padding: 3px 0; color: #475569;">${dateStr}</td>
+              </tr>
+              <tr>
+                <td style="padding: 3px 0; font-weight: 700; color: #0284c7;">RE:</td>
+                <td style="padding: 3px 0; font-weight: 700; color: #0f172a;">${reText}</td>
+              </tr>
+            </table>
           </div>
-          <div style="border-top: 1px solid #e2e8f0; padding-top: 8px; margin-top: 16px; font-size: 9px; color: #94a3b8; text-align: center;">
-            Generated via Aether // Hermes Forensic Merchant Processing Audit Engine
+
+          <div style="margin-bottom: 20px;">
+            ${bodyElements.join('')}
+          </div>
+
+          <div style="margin-top: 28px; padding-top: 16px; border-top: 1px solid #cbd5e1; page-break-inside: avoid;">
+            <p style="font-size: 12px; font-weight: 600; color: #0f172a; margin: 0 0 16px 0;">Sincerely,</p>
+            <div style="font-size: 14px; font-weight: 700; color: #0f172a;">${fromText} Management</div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">Authorized Account Executive / Merchant Principal</div>
+          </div>
+
+          <div style="border-top: 1px solid #e2e8f0; margin-top: 24px; padding-top: 8px; font-size: 9px; color: #94a3b8; text-align: center;">
+            CONFIDENTIAL // Generated via Aether Hermes Forensic Merchant Processing Audit Engine
           </div>
         `;
 
         document.body.appendChild(container);
+        await new Promise(resolve => setTimeout(resolve, 100));
 
-        let cleanBizName = (bizName || "").replace(/[^a-zA-Z0-9_\-]/g, "_").replace(/_+/g, "_").trim();
+        let cleanBizName = (fromText || "").replace(/[^a-zA-Z0-9_\-]/g, "_").replace(/_+/g, "_").trim();
         cleanBizName = cleanBizName.replace(/^_+|_+$/g, "");
         const fileName = cleanBizName ? `Demand_Letter_${cleanBizName}.pdf` : "Demand_Letter.pdf";
 
         const opt = {
-          margin:       [0.3, 0.4, 0.3, 0.4],
+          margin:       0.5,
           filename:     fileName,
           image:        { type: 'jpeg', quality: 0.98 },
-          html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: 800 },
+          html2canvas:  { scale: 2, useCORS: true, logging: false },
           jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
           pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
         };
@@ -714,7 +785,9 @@ or provide the formal cancellation procedures for our account.
           console.error("PDF generation failed:", err);
           showToast("PDF Export Error: " + err.message);
         } finally {
-          document.body.removeChild(container);
+          if (document.body.contains(container)) {
+            document.body.removeChild(container);
+          }
         }
       });
     }
