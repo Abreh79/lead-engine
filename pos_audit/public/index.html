@@ -12,6 +12,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- html2pdf.js CDN for direct PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -309,10 +311,17 @@
                 <span id="targetEffectiveRate" class="text-lg font-bold text-emerald-400">2.11%</span>
               </div>
 
-              <button id="copyLetterBtn" class="flex items-center justify-center space-x-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold text-sm px-5 py-3 rounded-xl shadow-lg shadow-cyan-500/25 transition-all active:scale-95">
-                <i data-lucide="copy" class="w-4 h-4"></i>
-                <span>Copy Demand Letter</span>
-              </button>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button id="copyLetterBtn" class="flex items-center justify-center space-x-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold text-xs sm:text-sm px-4 py-3 rounded-xl shadow-lg shadow-cyan-500/25 transition-all active:scale-95">
+                  <i data-lucide="copy" class="w-4 h-4"></i>
+                  <span>Copy Demand Letter</span>
+                </button>
+
+                <button id="downloadPdfBtn" class="flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-cyan-300 font-bold text-xs sm:text-sm px-4 py-3 rounded-xl shadow-lg transition-all active:scale-95">
+                  <i data-lucide="file-text" class="w-4 h-4 text-cyan-400"></i>
+                  <span>Download PDF Memo</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -508,6 +517,9 @@
           if (json.demand_letter) {
             window.currentDemandLetter = json.demand_letter;
           }
+          if (data.business_name) {
+            window.currentBusinessName = data.business_name;
+          }
 
           showToast(`Audit Complete: ${data.business_name || file.name}`);
         } else {
@@ -612,6 +624,96 @@ or provide the formal cancellation procedures for our account.
         showToast("Demand Letter copied to clipboard!");
       }
     });
+
+    // Download PDF Demand Letter Functionality
+    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    if (downloadPdfBtn) {
+      downloadPdfBtn.addEventListener('click', async () => {
+        let letterText = window.currentDemandLetter;
+        let bizName = window.currentBusinessName || "";
+
+        if (!letterText) {
+          const volume = parseFloat(volumeRange.value);
+          const fees = parseFloat(feesRange.value);
+          const junk = parseFloat(junkRange.value);
+          const effectiveRate = ((fees / volume) * 100).toFixed(2);
+          const txCount = parseInt(txRange.value);
+          const interchange = (volume * 0.0175) + (txCount * 0.08);
+          const spread = Math.max(0, fees - interchange).toFixed(2);
+          const icPlusTotal = interchange + (volume * 0.0015) + (txCount * 0.07);
+          const annualSavings = Math.max(0, (fees - icPlusTotal) * 12).toFixed(2);
+
+          letterText = `To: Merchant Account Retention / Pricing Department\nFrom: [Merchant]\nRe: Notice of Processing Cost Review & Rate Match Request\n\nWe have completed an independent forensic audit of our recent merchant processing statements.\nOur current effective rate has climbed to ${effectiveRate}%, representing a processor spread of $${spread}/mo over baseline interchange on $${volume.toLocaleString('en-US')} in volume.\n\nSpecifically, we have flagged $${junk.toFixed(2)}/mo in non-negotiable ancillary junk fee surcharges.\n\nWe have received a competitive, binding quote for transparent Interchange-Plus pricing at:\n  - Interchange + 0.15% (15 bps) + $0.07 per transaction\n  - $0.00 ancillary statement/portal/PCI non-compliance fees\n  - Projected annual cost reduction: $${parseFloat(annualSavings).toLocaleString('en-US')}\n\nPlease confirm in writing within 5 business days whether your office will adjust our schedule, or provide the formal cancellation procedures for our account.`;
+        }
+
+        const container = document.createElement('div');
+        container.style.cssText = 'padding: 40px; font-family: "Helvetica Neue", Arial, sans-serif; color: #0f172a; background: #ffffff; line-height: 1.6; max-width: 800px; margin: 0 auto;';
+
+        const lines = letterText.split('\n');
+        const formattedLines = lines.map(line => {
+          const trimmed = line.trim();
+          if (!trimmed) return '<div style="height: 10px;"></div>';
+          if (trimmed.startsWith('To:') || trimmed.startsWith('From:') || trimmed.startsWith('Re:')) {
+            const parts = trimmed.split(':');
+            return `<p style="margin: 4px 0; font-size: 14px;"><strong style="color: #0284c7;">${parts[0]}:</strong>${parts.slice(1).join(':')}</p>`;
+          }
+          if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
+            return `<li style="margin: 4px 0 4px 20px; font-size: 13px; color: #334155;">${trimmed.substring(1).trim()}</li>`;
+          }
+          if (trimmed.toUpperCase().includes('MERCHANT PROCESSING') || trimmed.includes('===') || trimmed.includes('---')) {
+            return '';
+          }
+          return `<p style="margin: 8px 0; font-size: 13px; text-align: justify; color: #1e293b;">${line}</p>`;
+        }).join('');
+
+        container.innerHTML = `
+          <div style="border-bottom: 2px solid #0284c7; padding-bottom: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: -0.5px;">Merchant Fee Reduction Demand</h1>
+              <p style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;">Forensic Rate Audit & Binding Quote Rate Match Request</p>
+            </div>
+            <div style="text-align: right;">
+              <span style="display: inline-block; background: #e0f2fe; border: 1px solid #bae6fd; color: #0369a1; font-weight: 700; font-size: 11px; padding: 4px 10px; border-radius: 6px;">FORMAL NOTICE</span>
+            </div>
+          </div>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+            ${formattedLines}
+          </div>
+          <div style="border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 24px; font-size: 10px; color: #94a3b8; text-align: center;">
+            Generated via Aether // Hermes Forensic Merchant Processing Audit Engine
+          </div>
+        `;
+
+        document.body.appendChild(container);
+
+        let cleanBizName = (bizName || "").replace(/[^a-zA-Z0-9_\-]/g, "_").replace(/_+/g, "_").trim();
+        cleanBizName = cleanBizName.replace(/^_+|_+$/g, "");
+        const fileName = cleanBizName ? `Demand_Letter_${cleanBizName}.pdf` : "Demand_Letter.pdf";
+
+        const opt = {
+          margin:       [0.4, 0.4, 0.4, 0.4],
+          filename:     fileName,
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2, useCORS: true, logging: false },
+          jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        try {
+          if (window.html2pdf) {
+            await window.html2pdf().set(opt).from(container).save();
+            showToast(`PDF Downloaded: ${fileName}`);
+          } else {
+            window.print();
+            showToast("Print Dialog Opened");
+          }
+        } catch (err) {
+          console.error("PDF generation failed:", err);
+          showToast("PDF Export Error: " + err.message);
+        } finally {
+          document.body.removeChild(container);
+        }
+      });
+    }
 
     function showToast(message) {
       toastMsg.textContent = message;
