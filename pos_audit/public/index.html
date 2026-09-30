@@ -12,8 +12,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- html2pdf.js CDN for direct PDF export -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -625,10 +623,10 @@ or provide the formal cancellation procedures for our account.
       }
     });
 
-    // Download PDF Demand Letter Functionality
+    // Download PDF Demand Letter Functionality (Native Iframe Print)
     const downloadPdfBtn = document.getElementById('downloadPdfBtn');
     if (downloadPdfBtn) {
-      downloadPdfBtn.addEventListener('click', async () => {
+      downloadPdfBtn.addEventListener('click', () => {
         let letterText = window.currentDemandLetter;
         let bizName = window.currentBusinessName || "";
 
@@ -647,7 +645,6 @@ or provide the formal cancellation procedures for our account.
           letterText = `To: Merchant Account Retention / Pricing Department\nFrom: ${merchant}\nRe: Notice of Processing Cost Review & Rate Match Request\n\nWe have completed an independent forensic audit of our recent merchant processing statements.\nOur current effective rate has climbed to ${effectiveRate}%, representing a processor spread of $${parseFloat(spread).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}/mo over baseline interchange on $${volume.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} in volume.\n\nSpecifically, we have flagged non-negotiable fee concerns including:\n  - Ancillary junk fee surcharges & PCI non-compliance fees: $${parseFloat(junk).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}/mo\n  - Elevated non-qualified tier margins and padded transaction surcharges\n\nWe have received a competitive, binding quote for transparent Interchange-Plus pricing at:\n  - Interchange + 0.15% (15 bps) + $0.07 per transaction\n  - $0.00 ancillary statement/portal/PCI non-compliance fees\n  - Projected annual cost reduction: $${parseFloat(annualSavings).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}\n\nWe prefer to avoid the operational friction of reprogramming our terminals and re-routing batch settlements to a new acquiring partner. However, we require an immediate adjustment to match transparent Interchange-Plus terms and waive all assessed junk fees.\n\nPlease confirm in writing within 5 business days whether your office will adjust our schedule, or provide the formal cancellation procedures for our account.\n\nSincerely,\n${merchant} Management`;
         }
 
-        // Parse extracted details from letterText or globals
         let toText = "Merchant Account Retention / Pricing Department";
         let fromText = bizName || "Merchant Principal";
         let reText = "Notice of Processing Cost Review & Rate Match Request";
@@ -682,20 +679,20 @@ or provide the formal cancellation procedures for our account.
           if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
             const bulletContent = trimmed.replace(/^[\s\-•]+/, '').trim();
             bodyElements.push(`
-              <div style="margin: 4px 0 4px 16px; font-size: 12px; color: #1e293b; display: flex; align-items: flex-start; line-height: 1.5;">
-                <span style="color: #0284c7; font-weight: bold; margin-right: 8px; font-size: 14px; line-height: 1;">•</span>
+              <div class="bullet-item">
+                <span class="bullet-dot">•</span>
                 <span>${bulletContent}</span>
               </div>
             `);
           } else if (trimmed.includes('5 business days') || trimmed.includes('confirm in writing')) {
             bodyElements.push(`
-              <div style="background: #f0f9ff; border-left: 4px solid #0284c7; padding: 12px 16px; margin: 16px 0; border-radius: 0 6px 6px 0; color: #0369a1; font-weight: 600; font-size: 12px; line-height: 1.5;">
+              <div class="notice-box">
                 ${trimmed}
               </div>
             `);
           } else {
             bodyElements.push(`
-              <p style="margin: 10px 0; font-size: 12px; line-height: 1.6; color: #1e293b; text-align: justify;">
+              <p>
                 ${trimmed}
               </p>
             `);
@@ -704,91 +701,186 @@ or provide the formal cancellation procedures for our account.
 
         const dateStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-        const container = document.createElement('div');
-        container.id = 'pdf-export-container';
-        container.style.cssText = 'position: fixed; top: 0; left: 0; width: 750px; height: auto; min-height: auto; max-height: none; overflow: visible; padding: 32px; font-family: "Helvetica Neue", Arial, sans-serif; color: #0f172a; background: #ffffff; background-color: #ffffff; line-height: 1.5; box-sizing: border-box; z-index: -9999; opacity: 1;';
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
 
-        container.innerHTML = `
-          <div style="border-bottom: 2px solid #0284c7; padding-bottom: 12px; margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: -0.5px;">Merchant Account Retention Demand</h1>
-                <p style="font-size: 11px; color: #0284c7; font-weight: 700; margin: 4px 0 0 0; text-transform: uppercase; letter-spacing: 0.5px;">Forensic Rate Audit & Binding Quote Match Request</p>
-              </div>
-              <div style="text-align: right;">
-                <span style="display: inline-block; background: #e0f2fe; border: 1px solid #0284c7; color: #0369a1; font-weight: 800; font-size: 10px; padding: 4px 10px; border-radius: 4px; text-transform: uppercase;">FORMAL RATE NOTICE</span>
-              </div>
+        document.body.appendChild(iframe);
+
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Demand Letter - ${fromText}</title>
+            <style>
+              @page {
+                size: letter portrait;
+                margin: 0.5in;
+              }
+              body {
+                font-family: "Helvetica Neue", Arial, sans-serif;
+                color: #000000;
+                background: #ffffff;
+                margin: 0;
+                padding: 0;
+                line-height: 1.5;
+                font-size: 11pt;
+              }
+              h1 {
+                font-size: 18pt;
+                font-weight: 800;
+                margin: 0 0 4pt 0;
+                text-transform: uppercase;
+                color: #000000;
+                letter-spacing: -0.5px;
+              }
+              .subtitle {
+                font-size: 9.5pt;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: #333333;
+                margin: 0;
+              }
+              .badge {
+                display: inline-block;
+                border: 1.5pt solid #000000;
+                color: #000000;
+                font-weight: 800;
+                font-size: 8.5pt;
+                padding: 3pt 8pt;
+                text-transform: uppercase;
+              }
+              .header-rule {
+                border-bottom: 2pt solid #000000;
+                padding-bottom: 10pt;
+                margin-bottom: 14pt;
+              }
+              .details-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 14pt;
+                background: #f8f8f8;
+                border: 1pt solid #cccccc;
+              }
+              .details-table td {
+                padding: 5pt 8pt;
+                font-size: 10pt;
+                color: #000000;
+              }
+              .details-table .label {
+                font-weight: 800;
+                width: 60pt;
+              }
+              p {
+                margin: 8pt 0;
+                font-size: 10.5pt;
+                line-height: 1.5;
+                color: #000000;
+                text-align: justify;
+              }
+              .bullet-item {
+                margin: 4pt 0 4pt 14pt;
+                font-size: 10.5pt;
+                line-height: 1.4;
+                color: #000000;
+                display: flex;
+                align-items: flex-start;
+              }
+              .bullet-dot {
+                font-weight: bold;
+                margin-right: 6pt;
+              }
+              .notice-box {
+                border-left: 3.5pt solid #000000;
+                background: #f0f0f0;
+                padding: 8pt 10pt;
+                margin: 12pt 0;
+                font-weight: 700;
+                font-size: 10.5pt;
+                color: #000000;
+              }
+              .signature-block {
+                margin-top: 20pt;
+                padding-top: 10pt;
+                border-top: 1pt solid #000000;
+                page-break-inside: avoid;
+              }
+              .footer {
+                margin-top: 20pt;
+                padding-top: 6pt;
+                border-top: 1pt solid #cccccc;
+                font-size: 8pt;
+                color: #666666;
+                text-align: center;
+              }
+              @media print {
+                body {
+                  width: 100%;
+                  overflow: visible !important;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="header-rule">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td>
+                    <h1>Merchant Account Retention Demand</h1>
+                    <p class="subtitle">Forensic Rate Audit & Binding Quote Match Request</p>
+                  </td>
+                  <td style="text-align: right; vertical-align: top;">
+                    <span class="badge">FORMAL RATE NOTICE</span>
+                  </td>
+                </tr>
+              </table>
             </div>
-          </div>
 
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 16px; margin-bottom: 20px; color: #0f172a;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-              <tr>
-                <td style="padding: 3px 0; width: 75px; font-weight: 700; color: #0284c7;">TO:</td>
-                <td style="padding: 3px 0; font-weight: 600; color: #0f172a;">${toText}</td>
-              </tr>
-              <tr>
-                <td style="padding: 3px 0; font-weight: 700; color: #0284c7;">FROM:</td>
-                <td style="padding: 3px 0; font-weight: 600; color: #0f172a;">${fromText}</td>
-              </tr>
-              <tr>
-                <td style="padding: 3px 0; font-weight: 700; color: #0284c7;">DATE:</td>
-                <td style="padding: 3px 0; color: #475569;">${dateStr}</td>
-              </tr>
-              <tr>
-                <td style="padding: 3px 0; font-weight: 700; color: #0284c7;">RE:</td>
-                <td style="padding: 3px 0; font-weight: 700; color: #0f172a;">${reText}</td>
-              </tr>
+            <table class="details-table">
+              <tr><td class="label">TO:</td><td>${toText}</td></tr>
+              <tr><td class="label">FROM:</td><td>${fromText}</td></tr>
+              <tr><td class="label">DATE:</td><td>${dateStr}</td></tr>
+              <tr><td class="label">RE:</td><td><strong>${reText}</strong></td></tr>
             </table>
-          </div>
 
-          <div style="margin-bottom: 20px;">
-            ${bodyElements.join('')}
-          </div>
+            <div style="margin-bottom: 14pt;">
+              ${bodyElements.join('')}
+            </div>
 
-          <div style="margin-top: 28px; padding-top: 16px; border-top: 1px solid #cbd5e1; page-break-inside: avoid;">
-            <p style="font-size: 12px; font-weight: 600; color: #0f172a; margin: 0 0 16px 0;">Sincerely,</p>
-            <div style="font-size: 14px; font-weight: 700; color: #0f172a;">${fromText} Management</div>
-            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">Authorized Account Executive / Merchant Principal</div>
-          </div>
+            <div class="signature-block">
+              <p style="margin: 0 0 12pt 0; font-weight: 600;">Sincerely,</p>
+              <div style="font-size: 12pt; font-weight: 800;">${fromText} Management</div>
+              <div style="font-size: 9pt; color: #333333; margin-top: 2pt;">Authorized Account Executive / Merchant Principal</div>
+            </div>
 
-          <div style="border-top: 1px solid #e2e8f0; margin-top: 24px; padding-top: 8px; font-size: 9px; color: #94a3b8; text-align: center;">
-            CONFIDENTIAL // Generated via Aether Hermes Forensic Merchant Processing Audit Engine
-          </div>
-        `;
+            <div class="footer">
+              CONFIDENTIAL // Generated via Aether Hermes Forensic Merchant Processing Audit Engine
+            </div>
+          </body>
+          </html>
+        `);
+        doc.close();
 
-        document.body.appendChild(container);
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        let cleanBizName = (fromText || "").replace(/[^a-zA-Z0-9_\-]/g, "_").replace(/_+/g, "_").trim();
-        cleanBizName = cleanBizName.replace(/^_+|_+$/g, "");
-        const fileName = cleanBizName ? `Demand_Letter_${cleanBizName}.pdf` : "Demand_Letter.pdf";
-
-        const opt = {
-          margin:       0.5,
-          filename:     fileName,
-          image:        { type: 'jpeg', quality: 0.98 },
-          html2canvas:  { scale: 2, useCORS: true, logging: false },
-          jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
-          pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-        };
-
-        try {
-          if (window.html2pdf) {
-            await window.html2pdf().set(opt).from(container).save();
-            showToast(`PDF Downloaded: ${fileName}`);
-          } else {
+        setTimeout(() => {
+          try {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+            showToast("Native Print Dialogue Opened");
+          } catch (e) {
+            console.error("Print error:", e);
             window.print();
-            showToast("Print Dialog Opened");
-          }
-        } catch (err) {
-          console.error("PDF generation failed:", err);
-          showToast("PDF Export Error: " + err.message);
-        } finally {
-          if (document.body.contains(container)) {
-            document.body.removeChild(container);
-          }
-        }
+          } setTimeout(() => {
+            if (document.body.contains(iframe)) {
+              document.body.removeChild(iframe);
+            }
+          }, 2000);
+        }, 250);
       });
     }
 
