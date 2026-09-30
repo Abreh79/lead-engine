@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aether // Hermes POS Audit Engine</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            space: '#030712',
+            obsidian: '#0b0f19',
+            cyanGlow: '#06b6d4',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #030712;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.15) 0%, transparent 65%),
+        radial-gradient(circle at 90% 40%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+      min-height: 100vh;
+      color: #f3f4f6;
+    }
+    .glass-card {
+      background: rgba(11, 15, 25, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(6, 182, 212, 0.3);
+      box-shadow: 0 0 25px rgba(6, 182, 212, 0.12);
+    }
+    .cyan-glow-text {
+      text-shadow: 0 0 20px rgba(6, 182, 212, 0.6), 0 0 40px rgba(6, 182, 212, 0.2);
+    }
+    .cyan-glow-card {
+      box-shadow: 0 0 35px rgba(6, 182, 212, 0.2);
+      border-color: rgba(6, 182, 212, 0.4) !important;
+    }
+    /* Slider Customization */
+    input[type=range] {
+      -webkit-appearance: none;
+      background: transparent;
+      width: 100%;
+    }
+    input[type=range]:focus {
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 8px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    input[type=range]::-webkit-slider-thumb {
+      height: 22px;
+      width: 22px;
+      border-radius: 50%;
+      background: #06b6d4;
+      cursor: pointer;
+      -webkit-appearance: none;
+      margin-top: -7px;
+      box-shadow: 0 0 12px #06b6d4;
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      background: #22d3ee;
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(3, 7, 18, 0.8);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(6, 182, 212, 0.3);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(6, 182, 212, 0.6);
+    }
+  </style>
+</head>
+<body class="font-sans antialiased selection:bg-cyan-500 selection:text-black">
+
+  <!-- Top Interstellar Command Status Bar -->
+  <header class="sticky top-0 z-50 backdrop-blur-md bg-space/80 border-b border-white/10 px-6 py-3.5 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <div class="p-2 rounded-lg bg-cyan-950/50 border border-cyan-500/30 text-cyan-400">
+        <i data-lucide="shield-alert" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <h1 class="text-sm font-bold tracking-wider uppercase text-slate-200">Aether // Hermes Engine</h1>
+        <p class="text-xs font-mono text-cyan-400/80">POS_FORENSIC_AUDIT_v2.5</p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-6">
+      <div class="hidden sm:flex items-center space-x-2 text-xs font-mono text-slate-400 bg-slate-900/80 border border-slate-800 px-3 py-1.5 rounded-full">
+        <span class="text-slate-500">SYS_LATENCY:</span>
+        <span class="text-emerald-400 font-semibold">12ms</span>
+      </div>
+
+      <div class="flex items-center space-x-2 bg-emerald-950/40 border border-emerald-500/30 px-3 py-1.5 rounded-full">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+        </span>
+        <span class="text-xs font-mono font-bold tracking-widest text-emerald-400">HERMES-CORE: ONLINE</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+
+    <!-- Subheader / Mission Banner -->
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-white/5 pb-6">
+      <div>
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono mb-2">
+          <i data-lucide="terminal" class="w-3.5 h-3.5"></i>
+          <span>FORENSIC MERCHANT RATE ANALYZER</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Merchant Processing Audit Bridge</h2>
+        <p class="text-sm text-slate-400 mt-1">Real-time interchange isolation, processor spread detection & automated fee reduction letters.</p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Legacy Mock Button (Disabled for Live Document Flow)
+        <button id="loadMockBtn" onclick="triggerMockAudit()" class="hidden flex items-center space-x-2 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 font-mono text-xs px-4 py-2.5 rounded-xl transition-all active:scale-95 shadow-lg shadow-cyan-950/50">
+          <i data-lucide="play-circle" class="w-4 h-4 text-cyan-400"></i>
+          <span>Load Midwest Auto Spa</span>
+        </button>
+        -->
+
+        <span class="px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs font-mono font-semibold text-cyan-300">
+          IC + 15 bps + $0.07/tx
+        </span>
+      </div>
+    </div>
+
+    <!-- Main Grid Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+      <!-- LEFT COLUMN: Telemetry Controls & Sliders (5 cols) -->
+      <div class="lg:col-span-5 space-y-6">
+        
+        <!-- Dropzone File Upload Card -->
+        <div class="glass-card p-5 border-dashed border-cyan-500/30 text-center relative overflow-hidden group hover:border-cyan-400 transition-all">
+          <input type="file" id="dropzoneInput" accept=".pdf,.png,.jpg,.jpeg" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+          <div id="dropzoneDefault" class="space-y-2 pointer-events-none">
+            <div class="w-10 h-10 mx-auto rounded-full bg-cyan-950/60 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+              <i data-lucide="file-up" class="w-5 h-5"></i>
+            </div>
+            <div class="text-xs font-mono text-slate-200 font-semibold">Drop Statement PDF / Image Here</div>
+            <div class="text-[10px] font-mono text-slate-400">Gemini Vision Forensic Extraction</div>
+          </div>
+          <div id="dropzoneLoading" class="hidden space-y-2 pointer-events-none">
+            <div class="w-10 h-10 mx-auto rounded-full bg-amber-950/60 border border-amber-500/30 flex items-center justify-center text-amber-400 animate-spin">
+              <i data-lucide="loader-2" class="w-5 h-5"></i>
+            </div>
+            <div class="text-xs font-mono text-amber-300 font-semibold animate-pulse">Gemini Vision Extracting...</div>
+            <div class="text-[10px] font-mono text-slate-400">Analyzing statement line items & interchange</div>
+          </div>
+        </div>
+
+        <div class="glass-card p-6 space-y-6">
+          <div class="flex items-center justify-between border-b border-white/10 pb-4">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="sliders" class="w-4 h-4 text-cyan-400"></i>
+              <h3 class="text-base font-bold text-slate-100 uppercase tracking-wider text-xs">Statement Parameters</h3>
+            </div>
+            <span class="text-xs font-mono text-cyan-400/70">LIVE_TELEMETRY</span>
+          </div>
+
+          <!-- Slider 1: Gross Volume -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center text-sm">
+              <label for="volumeRange" class="font-medium text-slate-300 flex items-center gap-1.5">
+                <i data-lucide="dollar-sign" class="w-4 h-4 text-emerald-400"></i> Gross Processing Volume
+              </label>
+              <span id="volumeVal" class="font-mono text-cyan-400 font-bold bg-cyan-950/40 border border-cyan-800/40 px-2.5 py-0.5 rounded text-sm">$62,400</span>
+            </div>
+            <input type="range" id="volumeRange" min="5000" max="250000" step="500" value="62400">
+            <div class="flex justify-between text-[10px] font-mono text-slate-500">
+              <span>$5,000</span>
+              <span>$250,000</span>
+            </div>
+          </div>
+
+          <!-- Slider 2: Monthly Transactions -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center text-sm">
+              <label for="txRange" class="font-medium text-slate-300 flex items-center gap-1.5">
+                <i data-lucide="credit-card" class="w-4 h-4 text-cyan-400"></i> Monthly Swipes / Transactions
+              </label>
+              <span id="txVal" class="font-mono text-cyan-400 font-bold bg-cyan-950/40 border border-cyan-800/40 px-2.5 py-0.5 rounded text-sm">1,850</span>
+            </div>
+            <input type="range" id="txRange" min="100" max="10000" step="50" value="1850">
+            <div class="flex justify-between text-[10px] font-mono text-slate-500">
+              <span>100 swipes</span>
+              <span>10,000 swipes</span>
+            </div>
+          </div>
+
+          <!-- Slider 3: Total Fees Charged -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center text-sm">
+              <label for="feesRange" class="font-medium text-slate-300 flex items-center gap-1.5">
+                <i data-lucide="receipt" class="w-4 h-4 text-rose-400"></i> Total Fees Charged
+              </label>
+              <span id="feesVal" class="font-mono text-rose-400 font-bold bg-rose-950/40 border border-rose-800/40 px-2.5 py-0.5 rounded text-sm">$2,215.20</span>
+            </div>
+            <input type="range" id="feesRange" min="200" max="10000" step="25" value="2215">
+            <div class="flex justify-between text-[10px] font-mono text-slate-500">
+              <span>$200</span>
+              <span>$10,000</span>
+            </div>
+          </div>
+
+          <!-- Slider 4: Ancillary Junk Fees -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center text-sm">
+              <label for="junkRange" class="font-medium text-slate-300 flex items-center gap-1.5">
+                <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i> Ancillary Junk Surcharges
+              </label>
+              <span id="junkVal" class="font-mono text-amber-400 font-bold bg-amber-950/40 border border-amber-800/40 px-2.5 py-0.5 rounded text-sm">$99.95</span>
+            </div>
+            <input type="range" id="junkRange" min="0" max="500" step="5" value="99.95">
+            <div class="flex justify-between text-[10px] font-mono text-slate-500">
+              <span>$0.00</span>
+              <span>$500.00</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Telemetry Breakdown Mini-Cards -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="glass-card p-4 space-y-1">
+            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">Effective Rate</span>
+            <div id="effectiveRateDisplay" class="text-xl font-mono font-bold text-amber-400">3.55%</div>
+            <span class="text-[10px] text-slate-500 block">Current Effective Fee</span>
+          </div>
+
+          <div class="glass-card p-4 space-y-1">
+            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">Processor Spread</span>
+            <div id="processorSpreadDisplay" class="text-xl font-mono font-bold text-rose-400">$1,123.20</div>
+            <span class="text-[10px] text-slate-500 block">Markup Over Wholesale</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: Core Audit Output & Terminal (7 cols) -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <!-- BIG RECOVERABLE STAT CALLOUT -->
+        <div class="glass-card cyan-glow-card p-6 sm:p-8 bg-gradient-to-br from-cyan-950/40 via-obsidian to-slate-950 relative overflow-hidden">
+          <div class="absolute -right-12 -top-12 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
+            <div>
+              <div class="flex items-center space-x-2 text-xs font-mono text-cyan-400 uppercase tracking-widest mb-1">
+                <i data-lucide="zap" class="w-4 h-4"></i>
+                <span>Recoverable Capital Benchmark</span>
+              </div>
+              <h3 class="text-slate-300 text-sm font-medium">Projected Annual Cash Savings</h3>
+              <div id="annualSavingsCallout" class="text-4xl sm:text-5xl font-mono font-extrabold text-cyan-400 cyan-glow-text mt-2">
+                $10,801.20
+              </div>
+              <p class="text-xs text-slate-400 mt-2">
+                Based on switching to transparent Interchange + 15 bps + $0.07 with zero junk fees.
+              </p>
+            </div>
+
+            <div class="flex flex-col justify-center space-y-3">
+              <div class="bg-slate-900/80 border border-slate-700/80 rounded-lg p-3 text-right font-mono">
+                <span class="text-[10px] text-slate-400 block uppercase">Target Effective Rate</span>
+                <span id="targetEffectiveRate" class="text-lg font-bold text-emerald-400">2.11%</span>
+              </div>
+
+              <button id="copyLetterBtn" class="flex items-center justify-center space-x-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold text-sm px-5 py-3 rounded-xl shadow-lg shadow-cyan-500/25 transition-all active:scale-95">
+                <i data-lucide="copy" class="w-4 h-4"></i>
+                <span>Copy Demand Letter</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- EMBEDDED MOCK TERMINAL BOX -->
+        <div class="glass-card overflow-hidden border-slate-800">
+          <div class="bg-slate-950 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <div class="w-3 h-3 rounded-full bg-rose-500/80"></div>
+              <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
+              <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+              <span class="ml-2 font-mono text-xs text-slate-400">hermes@console STDOUT</span>
+            </div>
+            <div class="flex items-center space-x-2 text-[10px] font-mono text-cyan-400/80">
+              <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+              <span>POS_PIPELINE.PY</span>
+            </div>
+          </div>
+
+          <div class="p-4 bg-slate-950/90 font-mono text-xs text-slate-300 space-y-2 h-72 overflow-y-auto" id="consoleStdout">
+            <p class="text-slate-500">[SYSTEM INIT] Hermes POS Audit Engine initialized.</p>
+            <p class="text-cyan-400">[+] Step 1: Running Forensic Math Analysis...</p>
+            <p class="text-emerald-400">[+] Step 2: Generating Audit Memo...</p>
+            <div class="border-l-2 border-cyan-500/50 pl-3 my-2 text-slate-400 text-[11px] space-y-0.5">
+              <p>======================================================</p>
+              <p>         MERCHANT PROCESSING SAVINGS AUDIT</p>
+              <p>======================================================</p>
+              <p id="termVol">Current Monthly Volume:   $62,400.00</p>
+              <p id="termSwipes">Total Swipes / Slips:     1,850</p>
+              <p id="termRate">Current Effective Rate:   3.55%</p>
+              <p id="termJunk">Detected Junk Fees:       $99.95/mo</p>
+              <p>------------------------------------------------------</p>
+              <p id="termSavings" class="text-cyan-300 font-bold">PROJECTED ANNUAL CASH SAVINGS: $10,801.20</p>
+              <p id="termVerdict" class="text-amber-400 font-bold">VERDICT: PRIORITY TARGET</p>
+              <p>------------------------------------------------------</p>
+            </div>
+            <p class="text-cyan-400">[+] Step 3: Drafting Retention Demand Letter...</p>
+            <p class="text-slate-400">[!] Demand letter compiled & ready for merchant retention department.</p>
+            <p class="text-emerald-400 font-bold">[✓] PIPELINE EXECUTION COMPLETE.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Cyber Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 flex items-center space-x-3 bg-slate-900 border border-cyan-500/50 px-5 py-3.5 rounded-xl shadow-2xl shadow-cyan-500/20 text-cyan-300 font-mono text-xs">
+    <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
+    <span id="toastMsg">Demand letter copied to clipboard!</span>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // DOM Elements
+    const volumeRange = document.getElementById('volumeRange');
+    const txRange = document.getElementById('txRange');
+    const feesRange = document.getElementById('feesRange');
+    const junkRange = document.getElementById('junkRange');
+
+    const volumeVal = document.getElementById('volumeVal');
+    const txVal = document.getElementById('txVal');
+    const feesVal = document.getElementById('feesVal');
+    const junkVal = document.getElementById('junkVal');
+
+    const effectiveRateDisplay = document.getElementById('effectiveRateDisplay');
+    const processorSpreadDisplay = document.getElementById('processorSpreadDisplay');
+    const annualSavingsCallout = document.getElementById('annualSavingsCallout');
+    const targetEffectiveRate = document.getElementById('targetEffectiveRate');
+
+    const termVol = document.getElementById('termVol');
+    const termSwipes = document.getElementById('termSwipes');
+    const termRate = document.getElementById('termRate');
+    const termJunk = document.getElementById('termJunk');
+    const termSavings = document.getElementById('termSavings');
+    const termVerdict = document.getElementById('termVerdict');
+
+    const copyLetterBtn = document.getElementById('copyLetterBtn');
+    const dropzoneInput = document.getElementById('dropzoneInput');
+    const dropzoneDefault = document.getElementById('dropzoneDefault');
+    const dropzoneLoading = document.getElementById('dropzoneLoading');
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+
+    // Audit Math Engine
+    function recalculate() {
+      const volume = parseFloat(volumeRange.value);
+      const txCount = parseInt(txRange.value);
+      const fees = parseFloat(feesRange.value);
+      const junk = parseFloat(junkRange.value);
+
+      // Format Labels
+      volumeVal.textContent = `$${volume.toLocaleString('en-US')}`;
+      txVal.textContent = txCount.toLocaleString('en-US');
+      feesVal.textContent = `$${fees.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      junkVal.textContent = `$${junk.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+      // Calculate Math
+      const effectiveRate = (fees / volume) * 100;
+      const interchange = (volume * 0.0175) + (txCount * 0.08);
+      const processorSpread = Math.max(0, fees - interchange);
+
+      // Benchmark IC+ (15 bps + $0.07 / tx)
+      const icPlusMarkup = (volume * 0.0015) + (txCount * 0.07);
+      const icPlusTotal = interchange + icPlusMarkup;
+      const monthlySavings = Math.max(0, fees - icPlusTotal);
+      const annualSavings = monthlySavings * 12;
+      const targetRate = (icPlusTotal / volume) * 100;
+
+      // Update Displays
+      effectiveRateDisplay.textContent = `${effectiveRate.toFixed(2)}%`;
+      processorSpreadDisplay.textContent = `$${processorSpread.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      annualSavingsCallout.textContent = `$${annualSavings.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      targetEffectiveRate.textContent = `${targetRate.toFixed(2)}%`;
+
+      // Update Terminal Box
+      if (termVol) termVol.textContent = `Current Monthly Volume:   $${volume.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      if (termSwipes) termSwipes.textContent = `Total Swipes / Slips:     ${txCount.toLocaleString('en-US')}`;
+      if (termRate) termRate.textContent = `Current Effective Rate:   ${effectiveRate.toFixed(2)}%`;
+      if (termJunk) termJunk.textContent = `Detected Junk Fees:       $${junk.toFixed(2)}/mo`;
+      if (termSavings) termSavings.textContent = `PROJECTED ANNUAL CASH SAVINGS: $${annualSavings.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      
+      const verdict = annualSavings > 1500 ? "PRIORITY TARGET" : "STANDARD";
+      if (termVerdict) {
+        termVerdict.textContent = `VERDICT: ${verdict}`;
+        termVerdict.className = verdict === "PRIORITY TARGET" ? "text-amber-400 font-bold" : "text-slate-400 font-bold";
+      }
+    }
+
+    // Event Listeners for Sliders
+    [volumeRange, txRange, feesRange, junkRange].forEach(input => {
+      input.addEventListener('input', () => {
+        window.currentDemandLetter = null;
+        recalculate();
+      });
+    });
+
+    // File Upload Handler
+    async function handleFileUpload(file) {
+      if (!file) return;
+      setLoadingState(true);
+      showToast(`Uploading ${file.name} for forensic extraction...`);
+
+      const stdoutEl = document.getElementById('consoleStdout');
+      if (stdoutEl) {
+        stdoutEl.innerText = `[+] Uploading ${file.name}...\n[+] Sending payload to Gemini Vision Forensic Engine...\n[+] Extracting gross volume, swipe count, interchange assessments & junk fees...\n[...] Forensic Math calculation in progress...`;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const res = await fetch('/api/audit/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const json = await res.json();
+        if (json.status === 'success') {
+          const data = json.data || {};
+          const analysis = json.analysis || data.analysis || {};
+          const ic = analysis.recommendations?.interchange_plus || {};
+
+          // Sync extracted numbers to sliders
+          if (data.gross_processing_volume) volumeRange.value = data.gross_processing_volume;
+          if (data.transaction_count) txRange.value = data.transaction_count;
+          if (data.total_fees_charged) feesRange.value = data.total_fees_charged;
+          
+          if (data.cost_breakdown?.ancillary_junk_fees && Array.isArray(data.cost_breakdown.ancillary_junk_fees)) {
+            const junkSum = data.cost_breakdown.ancillary_junk_fees.reduce((sum, item) => sum + (item.amount || 0), 0);
+            junkRange.value = junkSum;
+          }
+
+          // Recalculate slider-based displays
+          recalculate();
+
+          // Override hero callouts with backend exacts if available
+          if (ic.annual_savings !== undefined) {
+            annualSavingsCallout.innerText = '$' + Number(ic.annual_savings).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+          }
+          if (ic.estimated_effective_rate_pct !== undefined) {
+            targetEffectiveRate.innerText = Number(ic.estimated_effective_rate_pct).toFixed(2) + '%';
+          }
+
+          // Update terminal output box
+          if (stdoutEl && json.stdout) {
+            stdoutEl.innerText = json.stdout;
+          }
+
+          if (json.demand_letter) {
+            window.currentDemandLetter = json.demand_letter;
+          }
+
+          showToast(`Audit Complete: ${data.business_name || file.name}`);
+        } else {
+          showToast("Parse Failed: " + (json.detail || "Unknown error"));
+        }
+      } catch (err) {
+        showToast("Upload Error: " + err.message);
+      } finally {
+        setLoadingState(false);
+      }
+    }
+
+    function setLoadingState(loading) {
+      if (loading) {
+        dropzoneDefault.classList.add('hidden');
+        dropzoneLoading.classList.remove('hidden');
+      } else {
+        dropzoneDefault.classList.remove('hidden');
+        dropzoneLoading.classList.add('hidden');
+      }
+    }
+
+    // Dropzone Input & Drag-and-Drop Handlers
+    dropzoneInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        handleFileUpload(e.target.files[0]);
+      }
+    });
+
+    const dropzoneCard = dropzoneInput ? dropzoneInput.parentElement : null;
+    if (dropzoneCard) {
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropzoneCard.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzoneCard.classList.add('border-cyan-400', 'bg-cyan-950/20');
+        }, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropzoneCard.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzoneCard.classList.remove('border-cyan-400', 'bg-cyan-950/20');
+        }, false);
+      });
+
+      dropzoneCard.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt ? dt.files : null;
+        if (files && files.length > 0) {
+          handleFileUpload(files[0]);
+        }
+      });
+    }
+
+    // Copy Demand Letter Functionality
+    copyLetterBtn.addEventListener('click', async () => {
+      let letterText = window.currentDemandLetter;
+
+      if (!letterText) {
+        const volume = parseFloat(volumeRange.value);
+        const fees = parseFloat(feesRange.value);
+        const junk = parseFloat(junkRange.value);
+        const effectiveRate = ((fees / volume) * 100).toFixed(2);
+        const txCount = parseInt(txRange.value);
+        const interchange = (volume * 0.0175) + (txCount * 0.08);
+        const spread = Math.max(0, fees - interchange).toFixed(2);
+        const icPlusTotal = interchange + (volume * 0.0015) + (txCount * 0.07);
+        const annualSavings = Math.max(0, (fees - icPlusTotal) * 12).toFixed(2);
+
+        letterText = `
+To: Merchant Account Retention / Pricing Department
+Re: Notice of Processing Cost Review & Rate Match Request
+
+We have completed an independent forensic audit of our recent merchant processing statements. 
+Our current effective rate has climbed to ${effectiveRate}%, representing a processor spread 
+of $${spread}/mo over baseline interchange on $${volume.toLocaleString('en-US')} in volume.
+
+Specifically, we have flagged $${junk.toFixed(2)}/mo in non-negotiable ancillary junk fee surcharges.
+
+We have received a competitive, binding quote for transparent Interchange-Plus pricing at:
+  - Interchange + 0.15% (15 bps) + $0.07 per transaction
+  - $0.00 ancillary statement/portal/PCI non-compliance fees
+  - Projected annual cost reduction: $${parseFloat(annualSavings).toLocaleString('en-US')}
+
+Please confirm in writing within 5 business days whether your office will adjust our schedule, 
+or provide the formal cancellation procedures for our account.
+`.trim();
+      }
+
+      try {
+        await navigator.clipboard.writeText(letterText);
+        showToast("Demand Letter copied to clipboard!");
+      } catch (e) {
+        const ta = document.createElement("textarea");
+        ta.value = letterText;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showToast("Demand Letter copied to clipboard!");
+      }
+    });
+
+    function showToast(message) {
+      toastMsg.textContent = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    recalculate();
+  </script>
+
+<script>
+async function triggerMockAudit() {
+    console.log("Mock button clicked! Triggering API fetch...");
+    try {
+        const res = await fetch('/api/audit/mock');
+        const payload = await res.json();
+        console.log("Audit data received:", payload);
+        
+        // Extract savings amount from nested structure
+        const savings = payload?.data?.analysis?.recommendations?.interchange_plus?.annual_savings 
+                     || payload?.analysis?.recommendations?.interchange_plus?.annual_savings;
+        
+        // Force update the hero callout
+        const el = document.getElementById('annualSavingsCallout') 
+                || document.querySelector('[data-savings-callout]') 
+                || Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim().startsWith('$9,120'));
+        if (el && savings) {
+            el.innerText = '$' + Number(savings).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        // Update target effective rate badge
+        const targetRate = payload?.data?.analysis?.recommendations?.interchange_plus?.estimated_effective_rate_pct
+                        || payload?.analysis?.recommendations?.interchange_plus?.estimated_effective_rate_pct
+                        || payload?.data?.analysis?.recommendations?.interchange_plus?.target_effective_rate
+                        || payload?.analysis?.recommendations?.interchange_plus?.target_effective_rate;
+        const rateEl = document.getElementById('targetEffectiveRate') || document.getElementById('targetRateDisplay');
+        if (rateEl && targetRate) {
+            rateEl.innerText = Number(targetRate).toFixed(2) + '%';
+        }
+
+        // Update console stdout
+        const stdoutEl = document.getElementById('consoleStdout') || document.getElementById('terminalConsole');
+        if (stdoutEl && payload?.stdout) {
+            stdoutEl.innerText = payload.stdout;
+        }
+
+        // Store demand letter in window object
+        if (payload?.data?.demand_letter || payload?.demand_letter) {
+            window.currentDemandLetter = payload?.data?.demand_letter || payload?.demand_letter;
+        }
+        
+        showToast("Loaded Midwest Auto Spa Data!");
+    } catch (err) {
+        console.error("Failed to run mock audit:", err);
+    }
+}
+</script>
+</body>
+</html>
