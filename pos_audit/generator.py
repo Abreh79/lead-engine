@@ -41,7 +41,7 @@ of ${curr_spread:,.2f}/mo over baseline interchange on ${gross_vol:,.2f} in volu
 Specifically, we have flagged the following non-negotiable fee concerns:
 {junk_list if junk_list else "  - Elevated non-qualified tier margins and padded transaction surcharges"}
 
-We have received a competitive, binding quote for transparent Interchange-Plus pricing at:
+We are formally requesting a transparent line-item fee breakdown and rate adjustment to match competitive Interchange-Plus benchmark terms:
   - Interchange + 0.15% (15 bps) + $0.07 per transaction
   - $0.00 ancillary statement/portal/PCI non-compliance fees
   - Projected annual cost reduction: ${annual_sav:,.2f}
@@ -55,7 +55,7 @@ or provide the formal cancellation procedures for our account.
 
 Sincerely,
 {biz} Management
-"""
+""".strip()
     except Exception as e:
         return f"[Retention Demand Letter Fallback: {e}]"
 

@@ -93,6 +93,15 @@
       transform: scale(1.15);
       background: #22d3ee;
     }
+    /* Hide chrome spin buttons on number inputs for clean look */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
     /* Custom Scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
@@ -155,13 +164,6 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-3">
-        <!-- Legacy Mock Button (Disabled for Live Document Flow)
-        <button id="loadMockBtn" onclick="triggerMockAudit()" class="hidden flex items-center space-x-2 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 font-mono text-xs px-4 py-2.5 rounded-xl transition-all active:scale-95 shadow-lg shadow-cyan-950/50">
-          <i data-lucide="play-circle" class="w-4 h-4 text-cyan-400"></i>
-          <span>Load Midwest Auto Spa</span>
-        </button>
-        -->
-
         <span class="px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs font-mono font-semibold text-cyan-300">
           IC + 15 bps + $0.07/tx
         </span>
@@ -202,13 +204,17 @@
             <span class="text-xs font-mono text-cyan-400/70">LIVE_TELEMETRY</span>
           </div>
 
-          <!-- Slider 1: Gross Volume -->
+          <!-- Parameter 1: Gross Volume -->
           <div class="space-y-2">
             <div class="flex justify-between items-center text-sm">
-              <label for="volumeRange" class="font-medium text-slate-300 flex items-center gap-1.5">
+              <label for="volumeInput" class="font-medium text-slate-300 flex items-center gap-1.5">
                 <i data-lucide="dollar-sign" class="w-4 h-4 text-emerald-400"></i> Gross Processing Volume
               </label>
-              <span id="volumeVal" class="font-mono text-cyan-400 font-bold bg-cyan-950/40 border border-cyan-800/40 px-2.5 py-0.5 rounded text-sm">$62,400</span>
+              <div class="flex items-center gap-1">
+                <span class="text-xs font-mono text-slate-400">$</span>
+                <input type="number" id="volumeInput" min="0" step="0.01" value="62400.00" class="w-28 bg-cyan-950/40 border border-cyan-800/40 text-cyan-400 font-mono font-bold text-sm px-2 py-0.5 rounded text-right focus:outline-none focus:border-cyan-400">
+                <span id="volumeVal" class="hidden"></span>
+              </div>
             </div>
             <input type="range" id="volumeRange" min="5000" max="250000" step="500" value="62400">
             <div class="flex justify-between text-[10px] font-mono text-slate-500">
@@ -217,13 +223,16 @@
             </div>
           </div>
 
-          <!-- Slider 2: Monthly Transactions -->
+          <!-- Parameter 2: Monthly Transactions -->
           <div class="space-y-2">
             <div class="flex justify-between items-center text-sm">
-              <label for="txRange" class="font-medium text-slate-300 flex items-center gap-1.5">
+              <label for="txInput" class="font-medium text-slate-300 flex items-center gap-1.5">
                 <i data-lucide="credit-card" class="w-4 h-4 text-cyan-400"></i> Monthly Swipes / Transactions
               </label>
-              <span id="txVal" class="font-mono text-cyan-400 font-bold bg-cyan-950/40 border border-cyan-800/40 px-2.5 py-0.5 rounded text-sm">1,850</span>
+              <div class="flex items-center gap-1">
+                <input type="number" id="txInput" min="0" step="1" value="1850" class="w-24 bg-cyan-950/40 border border-cyan-800/40 text-cyan-400 font-mono font-bold text-sm px-2 py-0.5 rounded text-right focus:outline-none focus:border-cyan-400">
+                <span id="txVal" class="hidden"></span>
+              </div>
             </div>
             <input type="range" id="txRange" min="100" max="10000" step="50" value="1850">
             <div class="flex justify-between text-[10px] font-mono text-slate-500">
@@ -232,13 +241,17 @@
             </div>
           </div>
 
-          <!-- Slider 3: Total Fees Charged -->
+          <!-- Parameter 3: Total Fees Charged -->
           <div class="space-y-2">
             <div class="flex justify-between items-center text-sm">
-              <label for="feesRange" class="font-medium text-slate-300 flex items-center gap-1.5">
+              <label for="feesInput" class="font-medium text-slate-300 flex items-center gap-1.5">
                 <i data-lucide="receipt" class="w-4 h-4 text-rose-400"></i> Total Fees Charged
               </label>
-              <span id="feesVal" class="font-mono text-rose-400 font-bold bg-rose-950/40 border border-rose-800/40 px-2.5 py-0.5 rounded text-sm">$2,215.20</span>
+              <div class="flex items-center gap-1">
+                <span class="text-xs font-mono text-slate-400">$</span>
+                <input type="number" id="feesInput" min="0" step="0.01" value="2215.20" class="w-28 bg-rose-950/40 border border-rose-800/40 text-rose-400 font-mono font-bold text-sm px-2 py-0.5 rounded text-right focus:outline-none focus:border-rose-400">
+                <span id="feesVal" class="hidden"></span>
+              </div>
             </div>
             <input type="range" id="feesRange" min="200" max="10000" step="25" value="2215">
             <div class="flex justify-between text-[10px] font-mono text-slate-500">
@@ -247,13 +260,17 @@
             </div>
           </div>
 
-          <!-- Slider 4: Ancillary Junk Fees -->
+          <!-- Parameter 4: Ancillary Junk Fees -->
           <div class="space-y-2">
             <div class="flex justify-between items-center text-sm">
-              <label for="junkRange" class="font-medium text-slate-300 flex items-center gap-1.5">
+              <label for="junkInput" class="font-medium text-slate-300 flex items-center gap-1.5">
                 <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i> Ancillary Junk Surcharges
               </label>
-              <span id="junkVal" class="font-mono text-amber-400 font-bold bg-amber-950/40 border border-amber-800/40 px-2.5 py-0.5 rounded text-sm">$99.95</span>
+              <div class="flex items-center gap-1">
+                <span class="text-xs font-mono text-slate-400">$</span>
+                <input type="number" id="junkInput" min="0" step="0.01" value="99.95" class="w-28 bg-amber-950/40 border border-amber-800/40 text-amber-400 font-mono font-bold text-sm px-2 py-0.5 rounded text-right focus:outline-none focus:border-amber-400">
+                <span id="junkVal" class="hidden"></span>
+              </div>
             </div>
             <input type="range" id="junkRange" min="0" max="500" step="5" value="99.95">
             <div class="flex justify-between text-[10px] font-mono text-slate-500">
@@ -310,12 +327,12 @@
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <button id="copyLetterBtn" class="flex items-center justify-center space-x-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold text-xs sm:text-sm px-4 py-3 rounded-xl shadow-lg shadow-cyan-500/25 transition-all active:scale-95">
+                <button id="copyLetterBtn" class="flex items-center justify-center space-x-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold text-xs sm:text-sm px-4 py-3 rounded-xl shadow-lg shadow-cyan-500/25 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
                   <i data-lucide="copy" class="w-4 h-4"></i>
                   <span>Copy Demand Letter</span>
                 </button>
 
-                <button id="downloadPdfBtn" class="flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-cyan-300 font-bold text-xs sm:text-sm px-4 py-3 rounded-xl shadow-lg transition-all active:scale-95">
+                <button id="downloadPdfBtn" class="flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-cyan-300 font-bold text-xs sm:text-sm px-4 py-3 rounded-xl shadow-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
                   <i data-lucide="file-text" class="w-4 h-4 text-cyan-400"></i>
                   <span>Download PDF Memo</span>
                 </button>
@@ -378,16 +395,27 @@
     // Initialize Lucide Icons
     lucide.createIcons();
 
-    // DOM Elements
+    // Utility: HTML Escaper for Print DOM Sanitization
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // DOM Elements - Sliders & Inputs
     const volumeRange = document.getElementById('volumeRange');
     const txRange = document.getElementById('txRange');
     const feesRange = document.getElementById('feesRange');
     const junkRange = document.getElementById('junkRange');
 
-    const volumeVal = document.getElementById('volumeVal');
-    const txVal = document.getElementById('txVal');
-    const feesVal = document.getElementById('feesVal');
-    const junkVal = document.getElementById('junkVal');
+    const volumeInput = document.getElementById('volumeInput');
+    const txInput = document.getElementById('txInput');
+    const feesInput = document.getElementById('feesInput');
+    const junkInput = document.getElementById('junkInput');
 
     const effectiveRateDisplay = document.getElementById('effectiveRateDisplay');
     const processorSpreadDisplay = document.getElementById('processorSpreadDisplay');
@@ -402,24 +430,52 @@
     const termVerdict = document.getElementById('termVerdict');
 
     const copyLetterBtn = document.getElementById('copyLetterBtn');
+    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
     const dropzoneInput = document.getElementById('dropzoneInput');
     const dropzoneDefault = document.getElementById('dropzoneDefault');
     const dropzoneLoading = document.getElementById('dropzoneLoading');
     const toast = document.getElementById('toast');
     const toastMsg = document.getElementById('toastMsg');
 
-    // Audit Math Engine
-    function recalculate() {
-      const volume = parseFloat(volumeRange.value);
-      const txCount = parseInt(txRange.value);
-      const fees = parseFloat(feesRange.value);
-      const junk = parseFloat(junkRange.value);
+    // Audit Math Engine - Finite Numeric Checking & Precision Input Sync
+    function recalculate(source = 'slider') {
+      let volume, txCount, fees, junk;
 
-      // Format Labels
-      volumeVal.textContent = `$${volume.toLocaleString('en-US')}`;
-      txVal.textContent = txCount.toLocaleString('en-US');
-      feesVal.textContent = `$${fees.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-      junkVal.textContent = `$${junk.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      if (source === 'input') {
+        const parsedVol = parseFloat(volumeInput.value);
+        volume = Number.isFinite(parsedVol) ? parsedVol : 0;
+        volumeRange.value = volume;
+
+        const parsedTx = parseInt(txInput.value);
+        txCount = Number.isFinite(parsedTx) ? parsedTx : 0;
+        txRange.value = txCount;
+
+        const parsedFees = parseFloat(feesInput.value);
+        fees = Number.isFinite(parsedFees) ? parsedFees : 0;
+        feesRange.value = fees;
+
+        const parsedJunk = parseFloat(junkInput.value);
+        junk = Number.isFinite(parsedJunk) ? parsedJunk : 0;
+        junkRange.value = junk;
+      } else {
+        const parsedVol = parseFloat(volumeRange.value);
+        volume = Number.isFinite(parsedVol) ? parsedVol : 0;
+        volumeInput.value = volume.toFixed(2);
+
+        const parsedTx = parseInt(txRange.value);
+        txCount = Number.isFinite(parsedTx) ? parsedTx : 0;
+        txInput.value = txCount;
+
+        const parsedFees = parseFloat(feesRange.value);
+        fees = Number.isFinite(parsedFees) ? parsedFees : 0;
+        feesInput.value = fees.toFixed(2);
+
+        const parsedJunk = parseFloat(junkRange.value);
+        junk = Number.isFinite(parsedJunk) ? parsedJunk : 0;
+        junkInput.value = junk.toFixed(2);
+      }
+
+      if (volume <= 0) volume = 0.01; // prevent divide by zero
 
       // Calculate Math
       const effectiveRate = (fees / volume) * 100;
@@ -453,15 +509,22 @@
       }
     }
 
-    // Event Listeners for Sliders
+    // Event Listeners for Sliders & Number Inputs
     [volumeRange, txRange, feesRange, junkRange].forEach(input => {
       input.addEventListener('input', () => {
         window.currentDemandLetter = null;
-        recalculate();
+        recalculate('slider');
       });
     });
 
-    // File Upload Handler
+    [volumeInput, txInput, feesInput, junkInput].forEach(input => {
+      input.addEventListener('input', () => {
+        window.currentDemandLetter = null;
+        recalculate('input');
+      });
+    });
+
+    // File Upload Handler with Status/ContentType Verification & Error State Safety
     async function handleFileUpload(file) {
       if (!file) return;
       setLoadingState(true);
@@ -480,26 +543,46 @@
           method: 'POST',
           body: formData
         });
+
+        const contentType = res.headers.get('content-type') || '';
+        if (!res.ok || contentType.includes('text/html')) {
+          throw new Error("Audit endpoint unavailable — please check backend connection");
+        }
+
         const json = await res.json();
         if (json.status === 'success') {
+          // Re-enable export buttons on successful parse
+          copyLetterBtn.disabled = false;
+          downloadPdfBtn.disabled = false;
+          copyLetterBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          downloadPdfBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
           const data = json.data || {};
           const analysis = json.analysis || data.analysis || {};
           const ic = analysis.recommendations?.interchange_plus || {};
 
-          // Sync extracted numbers to sliders
-          if (data.gross_processing_volume) volumeRange.value = data.gross_processing_volume;
-          if (data.transaction_count) txRange.value = data.transaction_count;
-          if (data.total_fees_charged) feesRange.value = data.total_fees_charged;
+          // Sync extracted numbers to inputs and sliders
+          if (data.gross_processing_volume) {
+            volumeRange.value = data.gross_processing_volume;
+            volumeInput.value = Number(data.gross_processing_volume).toFixed(2);
+          }
+          if (data.transaction_count) {
+            txRange.value = data.transaction_count;
+            txInput.value = data.transaction_count;
+          }
+          if (data.total_fees_charged) {
+            feesRange.value = data.total_fees_charged;
+            feesInput.value = Number(data.total_fees_charged).toFixed(2);
+          }
           
           if (data.cost_breakdown?.ancillary_junk_fees && Array.isArray(data.cost_breakdown.ancillary_junk_fees)) {
             const junkSum = data.cost_breakdown.ancillary_junk_fees.reduce((sum, item) => sum + (item.amount || 0), 0);
             junkRange.value = junkSum;
+            junkInput.value = Number(junkSum).toFixed(2);
           }
 
-          // Recalculate slider-based displays
-          recalculate();
+          recalculate('input');
 
-          // Override hero callouts with backend exacts if available
           if (ic.annual_savings !== undefined) {
             annualSavingsCallout.innerText = '$' + Number(ic.annual_savings).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
           }
@@ -507,7 +590,6 @@
             targetEffectiveRate.innerText = Number(ic.estimated_effective_rate_pct).toFixed(2) + '%';
           }
 
-          // Update terminal output box
           if (stdoutEl && json.stdout) {
             stdoutEl.innerText = json.stdout;
           }
@@ -521,10 +603,25 @@
 
           showToast(`Audit Complete: ${data.business_name || file.name}`);
         } else {
-          showToast("Parse Failed: " + (json.detail || "Unknown error"));
+          throw new Error(json.detail || "Parse Failed");
         }
       } catch (err) {
-        showToast("Upload Error: " + err.message);
+        const errMsg = err.message || "Audit endpoint unavailable — please check backend connection";
+        showToast(errMsg);
+        if (stdoutEl) {
+          stdoutEl.innerText = `[ERROR] ${errMsg}`;
+        }
+        // Clear stale calculated savings and disable export buttons
+        annualSavingsCallout.textContent = "$0.00";
+        if (termSavings) termSavings.textContent = "PROJECTED ANNUAL CASH SAVINGS: $0.00";
+        if (termVerdict) {
+          termVerdict.textContent = "VERDICT: ENDPOINT UNAVAILABLE";
+          termVerdict.className = "text-rose-400 font-bold";
+        }
+        copyLetterBtn.disabled = true;
+        downloadPdfBtn.disabled = true;
+        copyLetterBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        downloadPdfBtn.classList.add('opacity-50', 'cursor-not-allowed');
       } finally {
         setLoadingState(false);
       }
@@ -574,38 +671,52 @@
       });
     }
 
-    // Copy Demand Letter Functionality
+    // Copy Demand Letter Functionality (Substantiated Rate Match Request Text)
     copyLetterBtn.addEventListener('click', async () => {
+      if (copyLetterBtn.disabled) return;
       let letterText = window.currentDemandLetter;
 
       if (!letterText) {
-        const volume = parseFloat(volumeRange.value);
-        const fees = parseFloat(feesRange.value);
-        const junk = parseFloat(junkRange.value);
-        const effectiveRate = ((fees / volume) * 100).toFixed(2);
-        const txCount = parseInt(txRange.value);
+        const parsedVol = parseFloat(volumeInput.value);
+        const volume = Number.isFinite(parsedVol) ? parsedVol : 0;
+        const parsedFees = parseFloat(feesInput.value);
+        const fees = Number.isFinite(parsedFees) ? parsedFees : 0;
+        const parsedJunk = parseFloat(junkInput.value);
+        const junk = Number.isFinite(parsedJunk) ? parsedJunk : 0;
+        const parsedTx = parseInt(txInput.value);
+        const txCount = Number.isFinite(parsedTx) ? parsedTx : 0;
+
+        const effectiveRate = volume > 0 ? ((fees / volume) * 100).toFixed(2) : "0.00";
         const interchange = (volume * 0.0175) + (txCount * 0.08);
         const spread = Math.max(0, fees - interchange).toFixed(2);
         const icPlusTotal = interchange + (volume * 0.0015) + (txCount * 0.07);
         const annualSavings = Math.max(0, (fees - icPlusTotal) * 12).toFixed(2);
+        const merchant = window.currentBusinessName || "[Merchant Principal]";
 
         letterText = `
 To: Merchant Account Retention / Pricing Department
+From: ${merchant}
 Re: Notice of Processing Cost Review & Rate Match Request
 
 We have completed an independent forensic audit of our recent merchant processing statements. 
 Our current effective rate has climbed to ${effectiveRate}%, representing a processor spread 
-of $${spread}/mo over baseline interchange on $${volume.toLocaleString('en-US')} in volume.
+of $${parseFloat(spread).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}/mo over baseline interchange on $${volume.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} in volume.
 
-Specifically, we have flagged $${junk.toFixed(2)}/mo in non-negotiable ancillary junk fee surcharges.
+Specifically, we have flagged non-negotiable fee concerns including:
+  - Ancillary junk fee surcharges & PCI non-compliance fees: $${junk.toFixed(2)}/mo
+  - Elevated non-qualified tier margins and padded transaction surcharges
 
-We have received a competitive, binding quote for transparent Interchange-Plus pricing at:
+We are formally requesting a transparent line-item fee breakdown and rate adjustment to match competitive Interchange-Plus benchmark terms:
   - Interchange + 0.15% (15 bps) + $0.07 per transaction
   - $0.00 ancillary statement/portal/PCI non-compliance fees
-  - Projected annual cost reduction: $${parseFloat(annualSavings).toLocaleString('en-US')}
+  - Projected annual cost reduction: $${parseFloat(annualSavings).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
 
-Please confirm in writing within 5 business days whether your office will adjust our schedule, 
-or provide the formal cancellation procedures for our account.
+We prefer to avoid the operational friction of reprogramming our terminals and re-routing batch settlements to a new acquiring partner. However, we require an immediate adjustment to match transparent Interchange-Plus terms and waive all assessed junk fees.
+
+Please confirm in writing within 5 business days whether your office will adjust our schedule, or provide the formal cancellation procedures for our account.
+
+Sincerely,
+${merchant} Management
 `.trim();
       }
 
@@ -623,26 +734,31 @@ or provide the formal cancellation procedures for our account.
       }
     });
 
-    // Download PDF Demand Letter Functionality (Native Iframe Print)
-    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    // Download PDF Demand Letter Functionality (Sanitized DOM Print Iframe)
     if (downloadPdfBtn) {
       downloadPdfBtn.addEventListener('click', () => {
+        if (downloadPdfBtn.disabled) return;
         let letterText = window.currentDemandLetter;
         let bizName = window.currentBusinessName || "";
 
         if (!letterText) {
-          const volume = parseFloat(volumeRange.value) || 25000;
-          const fees = parseFloat(feesRange.value) || 850;
-          const junk = parseFloat(junkRange.value) || 125;
-          const txCount = parseInt(txRange.value) || 320;
-          const effectiveRate = ((fees / volume) * 100).toFixed(2);
+          const parsedVol = parseFloat(volumeInput.value);
+          const volume = Number.isFinite(parsedVol) ? parsedVol : 25000;
+          const parsedFees = parseFloat(feesInput.value);
+          const fees = Number.isFinite(parsedFees) ? parsedFees : 850;
+          const parsedJunk = parseFloat(junkInput.value);
+          const junk = Number.isFinite(parsedJunk) ? parsedJunk : 125;
+          const parsedTx = parseInt(txInput.value);
+          const txCount = Number.isFinite(parsedTx) ? parsedTx : 320;
+
+          const effectiveRate = volume > 0 ? ((fees / volume) * 100).toFixed(2) : "0.00";
           const interchange = (volume * 0.0175) + (txCount * 0.08);
           const spread = Math.max(0, fees - interchange).toFixed(2);
           const icPlusTotal = interchange + (volume * 0.0015) + (txCount * 0.07);
           const annualSavings = Math.max(0, (fees - icPlusTotal) * 12).toFixed(2);
           const merchant = bizName || "[Merchant Business]";
 
-          letterText = `To: Merchant Account Retention / Pricing Department\nFrom: ${merchant}\nRe: Notice of Processing Cost Review & Rate Match Request\n\nWe have completed an independent forensic audit of our recent merchant processing statements.\nOur current effective rate has climbed to ${effectiveRate}%, representing a processor spread of $${parseFloat(spread).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}/mo over baseline interchange on $${volume.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} in volume.\n\nSpecifically, we have flagged non-negotiable fee concerns including:\n  - Ancillary junk fee surcharges & PCI non-compliance fees: $${parseFloat(junk).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}/mo\n  - Elevated non-qualified tier margins and padded transaction surcharges\n\nWe have received a competitive, binding quote for transparent Interchange-Plus pricing at:\n  - Interchange + 0.15% (15 bps) + $0.07 per transaction\n  - $0.00 ancillary statement/portal/PCI non-compliance fees\n  - Projected annual cost reduction: $${parseFloat(annualSavings).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}\n\nWe prefer to avoid the operational friction of reprogramming our terminals and re-routing batch settlements to a new acquiring partner. However, we require an immediate adjustment to match transparent Interchange-Plus terms and waive all assessed junk fees.\n\nPlease confirm in writing within 5 business days whether your office will adjust our schedule, or provide the formal cancellation procedures for our account.\n\nSincerely,\n${merchant} Management`;
+          letterText = `To: Merchant Account Retention / Pricing Department\nFrom: ${merchant}\nRe: Notice of Processing Cost Review & Rate Match Request\n\nWe have completed an independent forensic audit of our recent merchant processing statements.\nOur current effective rate has climbed to ${effectiveRate}%, representing a processor spread of $${parseFloat(spread).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}/mo over baseline interchange on $${volume.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} in volume.\n\nSpecifically, we have flagged non-negotiable fee concerns including:\n  - Ancillary junk fee surcharges & PCI non-compliance fees: $${parseFloat(junk).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}/mo\n  - Elevated non-qualified tier margins and padded transaction surcharges\n\nWe are formally requesting a transparent line-item fee breakdown and rate adjustment to match competitive Interchange-Plus benchmark terms:\n  - Interchange + 0.15% (15 bps) + $0.07 per transaction\n  - $0.00 ancillary statement/portal/PCI non-compliance fees\n  - Projected annual cost reduction: $${parseFloat(annualSavings).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}\n\nWe prefer to avoid the operational friction of reprogramming our terminals and re-routing batch settlements to a new acquiring partner. However, we require an immediate adjustment to match transparent Interchange-Plus terms and waive all assessed junk fees.\n\nPlease confirm in writing within 5 business days whether your office will adjust our schedule, or provide the formal cancellation procedures for our account.\n\nSincerely,\n${merchant} Management`;
         }
 
         let toText = "Merchant Account Retention / Pricing Department";
@@ -677,7 +793,7 @@ or provide the formal cancellation procedures for our account.
           if (inSignature) continue;
 
           if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
-            const bulletContent = trimmed.replace(/^[\s\-•]+/, '').trim();
+            const bulletContent = escapeHtml(trimmed.replace(/^[\s\-•]+/, '').trim());
             bodyElements.push(`
               <div class="bullet-item">
                 <span class="bullet-dot">•</span>
@@ -687,13 +803,13 @@ or provide the formal cancellation procedures for our account.
           } else if (trimmed.includes('5 business days') || trimmed.includes('confirm in writing')) {
             bodyElements.push(`
               <div class="notice-box">
-                ${trimmed}
+                ${escapeHtml(trimmed)}
               </div>
             `);
           } else {
             bodyElements.push(`
               <p>
-                ${trimmed}
+                ${escapeHtml(trimmed)}
               </p>
             `);
           }
@@ -717,7 +833,7 @@ or provide the formal cancellation procedures for our account.
           <!DOCTYPE html>
           <html>
           <head>
-            <title>Demand Letter - ${fromText}</title>
+            <title>Demand Letter - ${escapeHtml(fromText)}</title>
             <style>
               @page {
                 size: letter portrait;
@@ -833,7 +949,7 @@ or provide the formal cancellation procedures for our account.
                 <tr>
                   <td>
                     <h1>Merchant Account Retention Demand</h1>
-                    <p class="subtitle">Forensic Rate Audit & Binding Quote Match Request</p>
+                    <p class="subtitle">Forensic Rate Audit & Rate Match Request</p>
                   </td>
                   <td style="text-align: right; vertical-align: top;">
                     <span class="badge">FORMAL RATE NOTICE</span>
@@ -843,10 +959,10 @@ or provide the formal cancellation procedures for our account.
             </div>
 
             <table class="details-table">
-              <tr><td class="label">TO:</td><td>${toText}</td></tr>
-              <tr><td class="label">FROM:</td><td>${fromText}</td></tr>
-              <tr><td class="label">DATE:</td><td>${dateStr}</td></tr>
-              <tr><td class="label">RE:</td><td><strong>${reText}</strong></td></tr>
+              <tr><td class="label">TO:</td><td>${escapeHtml(toText)}</td></tr>
+              <tr><td class="label">FROM:</td><td>${escapeHtml(fromText)}</td></tr>
+              <tr><td class="label">DATE:</td><td>${escapeHtml(dateStr)}</td></tr>
+              <tr><td class="label">RE:</td><td><strong>${escapeHtml(reText)}</strong></td></tr>
             </table>
 
             <div style="margin-bottom: 14pt;">
@@ -855,7 +971,7 @@ or provide the formal cancellation procedures for our account.
 
             <div class="signature-block">
               <p style="margin: 0 0 12pt 0; font-weight: 600;">Sincerely,</p>
-              <div style="font-size: 12pt; font-weight: 800;">${fromText} Management</div>
+              <div style="font-size: 12pt; font-weight: 800;">${escapeHtml(fromText)} Management</div>
               <div style="font-size: 9pt; color: #333333; margin-top: 2pt;">Authorized Account Executive / Merchant Principal</div>
             </div>
 
@@ -894,55 +1010,7 @@ or provide the formal cancellation procedures for our account.
       }, 3000);
     }
 
-    recalculate();
+    recalculate('slider');
   </script>
-
-<script>
-async function triggerMockAudit() {
-    console.log("Mock button clicked! Triggering API fetch...");
-    try {
-        const res = await fetch('/api/audit/mock');
-        const payload = await res.json();
-        console.log("Audit data received:", payload);
-        
-        // Extract savings amount from nested structure
-        const savings = payload?.data?.analysis?.recommendations?.interchange_plus?.annual_savings 
-                     || payload?.analysis?.recommendations?.interchange_plus?.annual_savings;
-        
-        // Force update the hero callout
-        const el = document.getElementById('annualSavingsCallout') 
-                || document.querySelector('[data-savings-callout]') 
-                || Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim().startsWith('$9,120'));
-        if (el && savings) {
-            el.innerText = '$' + Number(savings).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-        }
-
-        // Update target effective rate badge
-        const targetRate = payload?.data?.analysis?.recommendations?.interchange_plus?.estimated_effective_rate_pct
-                        || payload?.analysis?.recommendations?.interchange_plus?.estimated_effective_rate_pct
-                        || payload?.data?.analysis?.recommendations?.interchange_plus?.target_effective_rate
-                        || payload?.analysis?.recommendations?.interchange_plus?.target_effective_rate;
-        const rateEl = document.getElementById('targetEffectiveRate') || document.getElementById('targetRateDisplay');
-        if (rateEl && targetRate) {
-            rateEl.innerText = Number(targetRate).toFixed(2) + '%';
-        }
-
-        // Update console stdout
-        const stdoutEl = document.getElementById('consoleStdout') || document.getElementById('terminalConsole');
-        if (stdoutEl && payload?.stdout) {
-            stdoutEl.innerText = payload.stdout;
-        }
-
-        // Store demand letter in window object
-        if (payload?.data?.demand_letter || payload?.demand_letter) {
-            window.currentDemandLetter = payload?.data?.demand_letter || payload?.demand_letter;
-        }
-        
-        showToast("Loaded Midwest Auto Spa Data!");
-    } catch (err) {
-        console.error("Failed to run mock audit:", err);
-    }
-}
-</script>
 </body>
 </html>
