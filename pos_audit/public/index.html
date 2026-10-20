@@ -383,6 +383,37 @@
 
     </div>
 
+    <!-- INTERNAL PARTNER ROUTING & RESIDUAL FLIGHT DECK (COLLAPSIBLE / ADMIN TELEMETRY) -->
+    <div class="mt-8 glass-card border border-cyan-500/30 p-6 sm:p-8 space-y-6 bg-gradient-to-br from-obsidian via-slate-950 to-space rounded-2xl relative overflow-hidden">
+      <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Header Bar with Collapse Toggle -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <div class="space-y-1">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="compass" class="w-5 h-5 text-emerald-400"></i>
+            <h3 class="text-lg font-bold text-slate-100 tracking-tight">Internal Partner Routing & Residual Flight Deck</h3>
+            <span class="bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+              CONFIDENTIAL // ISO YIELD OPTIMIZER
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">
+            Live wholesale buy rate, margin spread calculation, and net agent residual yield matching. Excluded from merchant PDF exports.
+          </p>
+        </div>
+
+        <button id="toggleFlightDeckBtn" type="button" class="self-start sm:self-auto bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 font-mono text-xs px-3 py-1.5 rounded-lg flex items-center space-x-2 transition-all">
+          <i data-lucide="chevron-down" id="flightDeckIcon" class="w-4 h-4 text-emerald-400 transition-transform"></i>
+          <span id="flightDeckToggleText">Collapse Deck</span>
+        </button>
+      </div>
+
+      <!-- ISO Cards Container -->
+      <div id="flightDeckContent" class="grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-300">
+        <!-- ISO cards will be dynamically rendered here by recalculate() -->
+      </div>
+    </div>
+
   </main>
 
   <!-- Cyber Toast Notification -->
@@ -436,6 +467,132 @@
     const dropzoneLoading = document.getElementById('dropzoneLoading');
     const toast = document.getElementById('toast');
     const toastMsg = document.getElementById('toastMsg');
+
+
+    // ISO Data Model
+    const ISO_PROFILES = {
+      payroc: {
+        name: "Payroc",
+        buyBps: 0.05,       // 5 bps wholesale buy rate
+        buyPerTx: 0.03,     // $0.03 wholesale transaction fee
+        residualSplit: 0.75,// 75% agent residual split
+        badge: "Max Yield / Dual-Pricing",
+        notes: "Optimal for high-ticket trade and professional services with itemized IC+ reporting."
+      },
+      cardconnect_nab: {
+        name: "CardConnect / NAB",
+        buyBps: 0.08,       // 8 bps wholesale buy rate
+        buyPerTx: 0.05,     // $0.05 wholesale transaction fee
+        residualSplit: 0.80,// 80% agent residual split
+        badge: "Hardware & Clover Swap",
+        notes: "Optimal when merchant requires direct Clover reprogramming or legacy terminal re-routing."
+      }
+    };
+
+    function updateFlightDeck(volume, txCount) {
+      const container = document.getElementById('flightDeckContent');
+      if (!container) return;
+
+      const targetBps = 0.15;      // 0.15% (15 bps)
+      const targetPerTx = 0.07;    // $0.07
+
+      const isoResults = [];
+
+      for (const [key, iso] of Object.entries(ISO_PROFILES)) {
+        const marginBps = Math.max(0, targetBps - iso.buyBps);
+        const marginPerTx = Math.max(0, targetPerTx - iso.buyPerTx);
+
+        const grossMargin = (volume * (marginBps / 100)) + (txCount * marginPerTx);
+        const netMonthly = grossMargin * iso.residualSplit;
+        const netAnnual = netMonthly * 12;
+
+        isoResults.push({
+          key,
+          iso,
+          marginBps,
+          marginPerTx,
+          grossMargin,
+          netMonthly,
+          netAnnual
+        });
+      }
+
+      isoResults.sort((a, b) => b.netMonthly - a.netMonthly);
+
+      const best = isoResults[0];
+      const second = isoResults.length > 1 ? isoResults[1] : null;
+      const deltaMonthly = second ? (best.netMonthly - second.netMonthly) : 0;
+
+      let html = '';
+      isoResults.forEach(item => {
+        const isBest = item.key === best.key;
+        const borderClass = isBest 
+          ? 'border-emerald-500/60 bg-gradient-to-br from-emerald-950/20 via-obsidian to-slate-950 shadow-lg shadow-emerald-500/10' 
+          : 'border-slate-800/80 bg-slate-950/60';
+        
+        const bestTag = isBest 
+          ? `<div class="bg-emerald-500 text-slate-950 text-[10px] font-mono font-extrabold uppercase px-2.5 py-1 rounded-md shadow-md flex items-center gap-1">
+               <i data-lucide="trophy" class="w-3 h-3"></i>
+               BEST ROUTE (+ $${deltaMonthly.toFixed(2)}/mo)
+             </div>`
+          : '';
+
+        html += `
+          <div class="glass-card p-5 rounded-xl border ${borderClass} space-y-4 relative">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <div class="flex items-center space-x-2">
+                  <h4 class="text-base font-bold text-white font-mono">${escapeHtml(item.iso.name)}</h4>
+                  <span class="text-[10px] font-mono text-cyan-400 bg-cyan-950/80 border border-cyan-800/50 px-2 py-0.5 rounded">
+                    ${escapeHtml(item.iso.badge)}
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1">${escapeHtml(item.iso.notes)}</p>
+              </div>
+              ${bestTag}
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-800/80 text-xs">
+              <div class="space-y-1">
+                <span class="text-[10px] font-mono text-slate-500 uppercase block">Buy Rate / Wholesale</span>
+                <span class="font-mono text-slate-300 font-semibold">${(item.iso.buyBps * 100).toFixed(0)} bps + $${item.iso.buyPerTx.toFixed(2)}</span>
+              </div>
+              <div class="space-y-1">
+                <span class="text-[10px] font-mono text-slate-500 uppercase block">Proposed Margin Spread</span>
+                <span class="font-mono text-cyan-400 font-semibold">+${(item.marginBps * 100).toFixed(0)} bps + $${item.marginPerTx.toFixed(2)}</span>
+              </div>
+              <div class="space-y-1">
+                <span class="text-[10px] font-mono text-slate-500 uppercase block">Agent Split Share</span>
+                <span class="font-mono text-slate-300 font-semibold">${(item.iso.residualSplit * 100).toFixed(0)}% Split</span>
+              </div>
+              <div class="space-y-1">
+                <span class="text-[10px] font-mono text-slate-500 uppercase block">Gross Margin Pool</span>
+                <span class="font-mono text-slate-300 font-semibold">$${item.grossMargin.toFixed(2)} / mo</span>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between bg-slate-900/50 -mx-5 -mb-5 p-4 rounded-b-xl">
+              <div>
+                <span class="text-[10px] font-mono text-slate-400 uppercase block">Net Agent Residual</span>
+                <span class="text-xl font-mono font-extrabold ${isBest ? 'text-emerald-400' : 'text-slate-200'}">
+                  $${item.netMonthly.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="text-xs font-normal text-slate-400">/ mo</span>
+                </span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] font-mono text-slate-400 uppercase block">Annualized Yield</span>
+                <span class="text-sm font-mono font-bold text-cyan-400">
+                  $${item.netAnnual.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="text-[10px] font-normal text-slate-400">/ yr</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      lucide.createIcons();
+    }
+
 
     // Audit Math Engine - Finite Numeric Checking & Precision Input Sync
     function recalculate(source = 'slider') {
@@ -503,6 +660,8 @@
       if (termSavings) termSavings.textContent = `PROJECTED ANNUAL CASH SAVINGS: $${annualSavings.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
       
       const verdict = annualSavings > 1500 ? "PRIORITY TARGET" : "STANDARD";
+      updateFlightDeck(volume, txCount);
+
       if (termVerdict) {
         termVerdict.textContent = `VERDICT: ${verdict}`;
         termVerdict.className = verdict === "PRIORITY TARGET" ? "text-amber-400 font-bold" : "text-slate-400 font-bold";
@@ -614,7 +773,9 @@
         // Clear stale calculated savings and disable export buttons
         annualSavingsCallout.textContent = "$0.00";
         if (termSavings) termSavings.textContent = "PROJECTED ANNUAL CASH SAVINGS: $0.00";
-        if (termVerdict) {
+        updateFlightDeck(volume, txCount);
+
+      if (termVerdict) {
           termVerdict.textContent = "VERDICT: ENDPOINT UNAVAILABLE";
           termVerdict.className = "text-rose-400 font-bold";
         }
