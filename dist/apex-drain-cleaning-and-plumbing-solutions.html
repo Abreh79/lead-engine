@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex Drain Cleaning & Plumbing Solutions | 24/7 Emergency Plumbing & Sewer Repair | Mid-Missouri Communities</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .drawer-slide { transition: transform 0.3s ease-in-out; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-cyan-600 selection:text-white pb-24 sm:pb-0">
+
+    <!-- Emergency Triage Top Banner -->
+    <div class="bg-red-600 text-white font-bold text-xs sm:text-sm py-2 px-4 text-center tracking-wide uppercase shadow-md flex items-center justify-center space-x-2 animate-pulse">
+        <span>🚨 24/7 EMERGENCY DISPATCH ACTIVE ACROSS Mid-Missouri Communities | AVG ARRIVAL: Under 25 Mins</span>
+        <a href="tel:+15735557733" class="underline hover:text-amber-200 ml-2">CALL NOW: +1 573-555-7733</a>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-40 backdrop-blur-md bg-slate-950/90 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="#" class="flex items-center space-x-3 group">
+                <div class="h-10 w-10 bg-cyan-600 rounded-xl flex items-center justify-center font-black text-xl text-white shadow-lg shadow-cyan-600/30">🔧</div>
+                <div>
+                    <span class="font-extrabold text-lg sm:text-xl tracking-tight text-white group-hover:text-cyan-400 transition-colors line-clamp-1">Apex Drain Cleaning & Plumbing Solutions</span>
+                    <span class="text-xs text-slate-400 block font-medium">Licensed • Insured • Master Plumbers</span>
+                </div>
+            </a>
+            
+            <div class="flex items-center space-x-3">
+                <a href="tel:+15735557733" class="hidden sm:inline-flex items-center space-x-2 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 px-4 py-2.5 rounded-xl text-sm font-bold transition-all">
+                    <span>📞 +1 573-555-7733</span>
+                </a>
+                <button onclick="openTriageDrawer('General Emergency')" class="bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold px-5 py-2.5 rounded-xl text-sm shadow-lg shadow-cyan-600/30 transition-all">
+                    🚨 24/7 Triage Drawer
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative py-16 sm:py-24 px-4 sm:px-6 max-w-6xl mx-auto text-center overflow-hidden">
+        <div class="inline-flex items-center space-x-2 bg-slate-900 border border-slate-800 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold text-amber-400 mb-8 shadow-inner">
+            <span>⭐ 4.9 Rating Across 136 Customer Reviews</span>
+            <span class="text-slate-600">•</span>
+            <span class="text-cyan-400">Master Plumber On Duty</span>
+        </div>
+        
+        <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+            Mid-Missouri Communities's Rapid <br class="hidden sm:inline"/>
+            <span class="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">Emergency Plumbing & Sewer Triage</span>
+        </h1>
+        
+        <p class="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto mb-10 leading-relaxed">
+            Active burst pipe, overflowing main drain, or water heater leak? Apex Drain Cleaning & Plumbing Solutions dispatches certified plumbers within 30 minutes to contain water damage and restore your home fast.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button onclick="openTriageDrawer('Immediate Dispatch')" class="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold px-8 py-4 rounded-xl text-lg shadow-xl shadow-cyan-600/30 transition-all transform hover:-translate-y-0.5 flex items-center justify-center space-x-2">
+                <span>🚨 Open Mobile Triage Drawer</span>
+            </button>
+            <a href="tel:+15735557733" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-slate-100 border border-slate-700 px-8 py-4 rounded-xl text-lg font-bold transition-all">
+                📞 Direct Phone: +1 573-555-7733
+            </a>
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 text-left border-t border-slate-800 pt-10">
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+                <div class="text-2xl mb-1">⏱️</div>
+                <div class="font-bold text-white text-sm">Rapid Arrival</div>
+                <div class="text-xs text-slate-400">On-site in Under 25 Mins</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+                <div class="text-2xl mb-1">🌊</div>
+                <div class="font-bold text-white text-sm">Main Line Hydro-Jet</div>
+                <div class="text-xs text-slate-400">4000 PSI clog extraction</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+                <div class="text-2xl mb-1">🔥</div>
+                <div class="font-bold text-white text-sm">Water Heater Pros</div>
+                <div class="text-xs text-slate-400">Tankless & standard repairs</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+                <div class="text-2xl mb-1">🛡️</div>
+                <div class="font-bold text-white text-sm">Upfront Pricing</div>
+                <div class="text-xs text-slate-400">No surprise overtime fees</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-16 bg-slate-900/40 border-y border-slate-800 px-4 sm:px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-extrabold text-white mb-3">Emergency Plumbing & Sewer Services</h2>
+                <p class="text-slate-400 max-w-xl mx-auto">Full-scale emergency plumbing solutions backed by master technician certifications and lifetime repair warranties.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-cyan-500/60 rounded-2xl p-6 shadow-xl flex flex-col justify-between transition-all duration-300 transform hover:-translate-y-1">
+            <div>
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold text-white">Emergency Drain Clearing & Auger Service</h3>
+                    <span class="bg-cyan-600/20 text-cyan-400 border border-cyan-500/30 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">Flat $99 Opening Special</span>
+                </div>
+                <p class="text-slate-300 text-sm mb-6 leading-relaxed">High-torque drain snaking for main stacks, kitchen lines, shower drains, and basement floor drains.</p>
+            </div>
+            <button onclick="openTriageDrawer('Emergency Drain Clearing & Auger Service')" class="w-full py-3 px-4 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl border border-cyan-500 transition-all text-center flex items-center justify-center space-x-2">
+                <span>🚨 Emergency Dispatch &rarr;</span>
+            </button>
+        </div>
+        
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-cyan-500/60 rounded-2xl p-6 shadow-xl flex flex-col justify-between transition-all duration-300 transform hover:-translate-y-1">
+            <div>
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold text-white">Frozen Pipe Thawing & Burst Protection</h3>
+                    <span class="bg-cyan-600/20 text-cyan-400 border border-cyan-500/30 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">24/7 Winter Response</span>
+                </div>
+                <p class="text-slate-300 text-sm mb-6 leading-relaxed">Safe electrical thawing of frozen water pipes and emergency isolation before catastrophic bursts.</p>
+            </div>
+            <button onclick="openTriageDrawer('Frozen Pipe Thawing & Burst Protection')" class="w-full py-3 px-4 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl border border-cyan-500 transition-all text-center flex items-center justify-center space-x-2">
+                <span>🚨 Emergency Dispatch &rarr;</span>
+            </button>
+        </div>
+        
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-cyan-500/60 rounded-2xl p-6 shadow-xl flex flex-col justify-between transition-all duration-300 transform hover:-translate-y-1">
+            <div>
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold text-white">Garbage Disposal & Fixture Overhauls</h3>
+                    <span class="bg-cyan-600/20 text-cyan-400 border border-cyan-500/30 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">Same-Day Install</span>
+                </div>
+                <p class="text-slate-300 text-sm mb-6 leading-relaxed">Heavy-duty commercial disposal installs, leak-free faucet upgrades, and valve replacements.</p>
+            </div>
+            <button onclick="openTriageDrawer('Garbage Disposal & Fixture Overhauls')" class="w-full py-3 px-4 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl border border-cyan-500 transition-all text-center flex items-center justify-center space-x-2">
+                <span>🚨 Emergency Dispatch &rarr;</span>
+            </button>
+        </div>
+        
+            </div>
+        </div>
+    </section>
+
+    <!-- Client Reviews Section -->
+    <section id="reviews" class="py-16 px-4 sm:px-6 max-w-7xl mx-auto">
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center space-x-2 text-amber-400 font-bold mb-2">
+                <span>★★★★★</span>
+                <span>4.9 / 5.0 Star Rating</span>
+            </div>
+            <h2 class="text-3xl font-extrabold text-white mb-3">Customer Verification Reviews</h2>
+            <p class="text-slate-400 max-w-xl mx-auto">Real verified reviews from homeowners in Mid-Missouri Communities.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-lg flex flex-col justify-between">
+            <div>
+                <div class="flex items-center space-x-1 text-amber-400 mb-3 text-lg">
+                    ★★★★★
+                </div>
+                <p class="text-slate-300 italic mb-4 text-sm leading-relaxed">"Chris Evans came out during a freeze warning and thawed our pipes before they burst. Saved us thousands in flood damages!"</p>
+            </div>
+            <div class="flex items-center justify-between border-t border-slate-800/80 pt-3 mt-2">
+                <span class="font-bold text-slate-200 text-sm">Samantha K.</span>
+                <span class="text-xs text-cyan-400 font-semibold bg-cyan-950/60 border border-cyan-800/60 px-2 py-0.5 rounded">Verified Local Client</span>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-lg flex flex-col justify-between">
+            <div>
+                <div class="flex items-center space-x-1 text-amber-400 mb-3 text-lg">
+                    ★★★★★
+                </div>
+                <p class="text-slate-300 italic mb-4 text-sm leading-relaxed">"The absolute best drain cleaning in Columbia. Arrived fast, fixed the clog, and charged exactly what was quoted."</p>
+            </div>
+            <div class="flex items-center justify-between border-t border-slate-800/80 pt-3 mt-2">
+                <span class="font-bold text-slate-200 text-sm">Tom H.</span>
+                <span class="text-xs text-cyan-400 font-semibold bg-cyan-950/60 border border-cyan-800/60 px-2 py-0.5 rounded">Verified Local Client</span>
+            </div>
+        </div>
+        
+        </div>
+    </section>
+
+    <!-- Triage Drawer Section (In-page anchor and slide-over) -->
+    <section id="triage" class="py-16 px-4 sm:px-6 max-w-4xl mx-auto">
+        <div class="bg-slate-900 border border-cyan-800/60 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-16 -top-16 w-64 h-64 bg-cyan-600/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="text-center mb-8">
+                <span class="bg-red-600/20 text-red-400 border border-red-500/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Mobile Emergency Triage Form</span>
+                <h2 class="text-3xl font-extrabold text-white mt-3 mb-2">Dispatch Emergency Plumber Now</h2>
+                <p class="text-slate-400 text-sm">Owner Chris Evans and our emergency dispatch unit will immediately confirm receipt and call you.</p>
+            </div>
+
+            <form id="triageForm" onsubmit="handleTriageSubmit(event)" class="space-y-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Your Name *</label>
+                        <input type="text" id="plumbCustName" required placeholder="John Doe" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-cyan-500 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Mobile Phone (For SMS Dispatch) *</label>
+                        <input type="tel" id="plumbCustPhone" required placeholder="(573) 555-0199" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-cyan-500 transition-colors">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Service Address *</label>
+                        <input type="text" required placeholder="e.g. 1104 Broadway, Columbia MO" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-cyan-500 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Emergency Category *</label>
+                        <select id="selectedPlumbService" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-cyan-500 transition-colors">
+                            <option value="Sewer Backup & Flooding">🚨 Main Sewer Line Backup / Active Flooding</option>
+                            <option value="Burst Pipe & Water Leak">💧 Burst Water Pipe / Major Leak</option>
+                            <option value="Water Heater Failure">🔥 Water Heater Leaking / No Hot Water</option>
+                            <option value="Drain Clog">🚿 Backed-Up Shower, Sink or Toilet</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Emergency Situation Notes</label>
+                    <textarea rows="3" placeholder="Describe the water leak location, severity, whether main shutoff valve is closed..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-cyan-500 transition-colors"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold py-4 rounded-xl text-lg shadow-xl shadow-cyan-600/30 transition-all uppercase tracking-wide flex items-center justify-center space-x-2">
+                    <span>⚡ Request Instant Emergency Dispatch</span>
+                </button>
+            </form>
+
+            <div id="triageSuccess" class="hidden mt-6 p-6 bg-cyan-950 border border-cyan-500 text-cyan-200 rounded-2xl text-center">
+                <div class="text-3xl mb-2">🚨</div>
+                <div class="font-extrabold text-xl mb-1 text-white">Emergency Dispatch Confirmed!</div>
+                <p class="text-sm">Priority dispatch dispatched! Apex Drain Cleaning & Plumbing Solutions is contacting <span id="plumbConfirmPhone" class="font-bold underline"></span> right now.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mobile Sticky Triage Bar / Bottom Drawer Launcher -->
+    <div class="fixed bottom-0 left-0 right-0 z-50 sm:hidden bg-slate-950/95 border-t border-slate-800 p-3 backdrop-blur-md flex items-center justify-between space-x-2">
+        <a href="tel:+15735557733" class="flex-1 bg-slate-900 border border-slate-700 text-white font-bold py-3 px-3 rounded-xl text-xs text-center">
+            📞 Call +1 573-555-7733
+        </a>
+        <button onclick="openTriageDrawer('Mobile Bar')" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold py-3 px-3 rounded-xl text-xs text-center shadow-lg shadow-cyan-600/40">
+            🚨 Emergency Drawer
+        </button>
+    </div>
+
+    <!-- Floating Drawer Modal / Overlay -->
+    <div id="mobileDrawerModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex justify-end">
+        <div class="bg-slate-900 border-l border-slate-800 w-full max-w-md h-full p-6 overflow-y-auto flex flex-col justify-between shadow-2xl">
+            <div>
+                <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-6">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl">🚨</span>
+                        <span class="font-extrabold text-white text-lg">24/7 Rapid Triage</span>
+                    </div>
+                    <button onclick="closeTriageDrawer()" class="text-slate-400 hover:text-white font-bold text-xl px-2">✕</button>
+                </div>
+
+                <p class="text-xs text-slate-400 mb-6">Direct emergency line for Apex Drain Cleaning & Plumbing Solutions in Mid-Missouri Communities. Expected response: Under 25 Mins.</p>
+
+                <form onsubmit="handleModalTriageSubmit(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Name *</label>
+                        <input type="text" required placeholder="John Doe" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Phone Number *</label>
+                        <input type="tel" id="modalPhone" required placeholder="(573) 555-0199" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Emergency Service</label>
+                        <select class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                            <option>Main Line Sewer Backup</option>
+                            <option>Burst Water Pipe</option>
+                            <option>Water Heater Leak</option>
+                            <option>Clogged Drain Extraction</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Property Address</label>
+                        <input type="text" required placeholder="Street address..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold py-3 rounded-xl text-sm shadow-lg shadow-cyan-600/30 uppercase tracking-wide">
+                        Dispatch Emergency Tech
+                    </button>
+                </form>
+
+                <div id="modalSuccess" class="hidden mt-4 p-4 bg-cyan-950 border border-cyan-500 text-cyan-200 rounded-xl text-xs text-center">
+                    ✅ Dispatch request sent! Plumber on duty will contact you immediately.
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-4 mt-6 text-center">
+                <a href="tel:+15735557733" class="block w-full py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-sm">
+                    📞 Direct Call: +1 573-555-7733
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-slate-800 bg-slate-950 py-10 px-4 sm:px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="text-center md:text-left">
+                <div class="font-extrabold text-white text-lg mb-1">Apex Drain Cleaning & Plumbing Solutions</div>
+                <div class="text-xs text-slate-400">Serving Mid-Missouri Communities</div>
+                <div class="text-xs text-slate-500 mt-1">Owner: Chris Evans | Direct Emergency: <a href="tel:+15735557733" class="hover:underline text-cyan-400">+1 573-555-7733</a> | chris@apexdrainsolutions.com</div>
+            </div>
+
+            <div class="text-xs text-slate-400 text-center md:text-right">
+                <p class="font-bold text-slate-300">24/7 Emergency Plumbing & Sewer Repair</p>
+                <p>Licensed & Insured • Master Plumbers</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-slate-900 mt-8 pt-6 text-center text-xs text-slate-600">
+            &copy; Apex Drain Cleaning & Plumbing Solutions. Emergency Plumbing Preview Page.
+        </div>
+    </footer>
+
+    <script>
+        function openTriageDrawer(category) {
+            document.getElementById('mobileDrawerModal').classList.remove('hidden');
+        }
+
+        function closeTriageDrawer() {
+            document.getElementById('mobileDrawerModal').classList.add('hidden');
+        }
+
+        function handleTriageSubmit(event) {
+            event.preventDefault();
+            const phoneVal = document.getElementById('plumbCustPhone').value || 'your phone number';
+            document.getElementById('plumbConfirmPhone').innerText = phoneVal;
+            document.getElementById('triageForm').classList.add('hidden');
+            document.getElementById('triageSuccess').classList.remove('hidden');
+        }
+
+        function handleModalTriageSubmit(event) {
+            event.preventDefault();
+            document.getElementById('modalSuccess').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

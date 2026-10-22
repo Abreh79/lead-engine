@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aether // Hermes POS Audit Engine</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            space: '#030712',
+            obsidian: '#0b0f19',
+            cyanGlow: '#06b6d4',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #030712;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.15) 0%, transparent 65%),
+        radial-gradient(circle at 90% 40%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+      min-height: 100vh;
+      color: #f3f4f6;
+    }
+    .glass-card {
+      background: rgba(11, 15, 25, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 1rem;
+    }
+    .cyan-glow-card {
+      box-shadow: 0 0 30px -5px rgba(6, 182, 212, 0.2);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+    }
+    .cyan-glow-text {
+      text-shadow: 0 0 12px rgba(6, 182, 212, 0.5);
+    }
+    input[type=range] {
+      accent-color: #06b6d4;
+      width: 100%;
+    }
+    /* Defense-in-Depth Print Shield */
+    @media print {
+      #iso-flight-deck, .admin-only {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-cyan-500 selection:text-black">
+
+  <!-- Top Cyber Navigation -->
+  <header class="border-b border-slate-800/80 bg-space/80 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-mono font-bold text-black shadow-lg shadow-cyan-500/20">
+          A
+        </div>
+        <div>
+          <span class="font-extrabold tracking-tight text-white text-base sm:text-lg">AETHER // POS AUDIT</span>
+          <span class="hidden sm:inline-block ml-2 px-2 py-0.5 text-[10px] font-mono bg-cyan-950 text-cyan-400 border border-cyan-800/50 rounded">HERMES_BRIDGE_v2.4</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-2 text-xs font-mono text-slate-400 bg-slate-900/80 border border-slate-800 px-3 py-1.5 rounded-full">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>GEMINI_VISION_ONLINE</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- STATEMENT UPLOAD DROPZONE HERO -->
+    <div class="glass-card p-6 sm:p-8 relative overflow-hidden border-cyan-500/20">
+      <div class="max-w-3xl space-y-4">
+        <div class="inline-flex items-center space-x-2 bg-cyan-950/80 border border-cyan-800/50 px-3 py-1 rounded-full text-xs font-mono text-cyan-400">
+          <i data-lucide="scan-line" class="w-3.5 h-3.5"></i>
+          <span>MULTIMODAL STATEMENT OCR & FORENSIC CALCULATOR</span>
+        </div>
+        <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+          Merchant Statement <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Forensic Audit Engine</span>
+        </h1>
+        <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+          Upload any merchant processing statement (PDF or Image). Gemini Vision extracts interchange breakdowns and ancillary fees automatically, benchmarking rates against standard Interchange-Plus terms.
+        </p>
+      </div>
+
+      <!-- Dropzone Component -->
+      <div class="mt-6 relative">
+        <label for="dropzoneInput" class="glass-card p-8 border-2 border-dashed border-slate-700 hover:border-cyan-400/80 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-cyan-950/10 group">
+          <input type="file" id="dropzoneInput" accept=".pdf,image/*" class="hidden">
+          
+          <div id="dropzoneDefault" class="flex flex-col items-center space-y-3 text-center">
+            <div class="w-14 h-14 rounded-2xl bg-cyan-950/60 border border-cyan-800/50 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+              <i data-lucide="upload-cloud" class="w-7 h-7"></i>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-200">
+                <span class="text-cyan-400">Click to upload</span> or drag and drop statement
+              </p>
+              <p class="text-xs text-slate-500 mt-1">PDF, PNG, JPG, or WEBP (Max 15MB)</p>
+            </div>
+          </div>
+
+          <div id="dropzoneLoading" class="hidden flex flex-col items-center space-y-3 text-center py-2">
+            <div class="w-10 h-10 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-sm font-mono text-cyan-300">Extracting statement metrics via Gemini Vision...</p>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- MAIN TWO-COLUMN WORKSPACE GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+      <!-- LEFT COLUMN: Sliders & Live Telemetry Inputs (5 cols) -->
+      <div class="lg:col-span-5 space-y-6">
+
+        <div class="glass-card p-6 space-y-6">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="sliders" class="w-4 h-4 text-cyan-400"></i>
+              <h3 class="text-base font-bold text-slate-100 uppercase tracking-wider text-xs">Statement Parameters</h3>
+            </div>
+            <span class="text-xs font-mono text-cyan-400/70">LIVE_TELEMETRY</span>
+          </div>
+
+          <!-- Parameter 1: Gross Volume -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center text-sm">
+              <label for="volumeInput" class="font-medium text-slate-300 flex items-center gap-1.5">
+                <i data-lucide="dollar-sign" class="w-4 h-4 text-emerald-400"></i> Gross Processing Volume
+              </label>
+              <div class="flex items-center gap-1">
+                <span class="text-xs font-mono text-slate-400">$</span>
+                <input type="number" id="volumeInput" min="0" step="0.01" value="62400.00" class="w-28 bg-cyan-950/40 border border-cyan-800/40 text-cyan-400 font-mono font-bold text-sm px-2 py-0.5 rounded text-right focus:outline-none focus:border-cyan-400">
+              </div>
+            </div>
+            <input type="range" id="volumeRange" min="5000" max="250000" step="500" value="62400">
+            <div class="flex justify-between text-[10px] font-mono text-slate-500">
+              <span>$5,000</span>
+              <span>$250,000</span>
+            </div>
+          </div>
+
+          <!-- Parameter 2: Monthly Transactions -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center text-sm">
+              <label for="txInput" class="font-medium text-slate-300 flex items-center gap-1.5">
+                <i data-lucide="credit-card" class="w-4 h-4 text-cyan-400"></i> Monthly Swipes / Transactions
+              </label>
+              <div class="flex items-center gap-1">
+                <input type="number" id="txInput" min="0" step="1" value="1850" class="w-24 bg-cyan-950/40 border border-cyan-800/40 text-cyan-400 font-mono font-bold text-sm px-2 py-0.5 rounded text-right focus:outline-none focus:border-cyan-400">
+              </div>
+            </div>
+            <input type="range" id="txRange" min="100" max="10000" step="50" value="1850">
+            <div class="flex justify-between text-[10px] font-mono text-slate-500">
+              <span>100 swipes</span>
+              <span>10,000 swipes</span>
+            </div>
+          </div>
+
+          <!-- Parameter 3: Total Fees Charged -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center text-sm">
+              <label for="feesInput" class="font-medium text-slate-300 flex items-center gap-1.5">
+                <i data-lucide="receipt" class="w-4 h-4 text-rose-400"></i> Total Fees Charged
+              </label>
+              <div class="flex items-center gap-1">
+                <span class="text-xs font-mono text-slate-400">$</span>
+                <input type="number" id="feesInput" min="0" step="0.01" value="2215.20" class="w-28 bg-rose-950/40 border border-rose-800/40 text-rose-400 font-mono font-bold text-sm px-2 py-0.5 rounded text-right focus:outline-none focus:border-rose-400">
+              </div>
+            </div>
+            <input type="range" id="feesRange" min="200" max="10000" step="25" value="2215">
+            <div class="flex justify-between text-[10px] font-mono text-slate-500">
+              <span>$200</span>
+              <span>$10,000</span>
+            </div>
+          </div>
+
+          <!-- Parameter 4: Ancillary Junk Fees -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center text-sm">
+              <label for="junkInput" class="font-medium text-slate-300 flex items-center gap-1.5">
+                <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i> Ancillary Junk Surcharges
+              </label>
+              <div class="flex items-center gap-1">
+                <span class="text-xs font-mono text-slate-400">$</span>
+                <input type="number" id="junkInput" min="0" step="0.01" value="99.95" class="w-28 bg-amber-950/40 border border-amber-800/40 text-amber-400 font-mono font-bold text-sm px-2 py-0.5 rounded text-right focus:outline-none focus:border-amber-400">
+              </div>
+            </div>
+            <input type="range" id="junkRange" min="0" max="500" step="5" value="99.95">
+            <div class="flex justify-between text-[10px] font-mono text-slate-500">
+              <span>$0.00</span>
+              <span>$500.00</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Telemetry Breakdown Mini-Cards -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="glass-card p-4 space-y-1">
+            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">Effective Rate</span>
+            <div id="effectiveRateDisplay" class="text-xl font-mono font-bold text-amber-400">3.55%</div>
+            <span class="text-[10px] text-slate-500 block">Current Effective Fee</span>
+          </div>
+
+          <div class="glass-card p-4 space-y-1">
+            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">Processor Spread</span>
+            <div id="processorSpreadDisplay" class="text-xl font-mono font-bold text-rose-400">$1,123.20</div>
+            <span class="text-[10px] text-slate-500 block">Markup Over Wholesale</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: Core Audit Output & Terminal (7 cols) -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <!-- BIG RECOVERABLE STAT CALLOUT -->
+        <div class="glass-card cyan-glow-card p-6 sm:p-8 bg-gradient-to-br from-cyan-950/40 via-obsidian to-slate-950 relative overflow-hidden">
+          <div class="absolute -right-12 -top-12 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
+            <div>
+              <div class="flex items-center space-x-2 text-xs font-mono text-cyan-400 uppercase tracking-widest mb-1">
+                <i data-lucide="zap" class="w-4 h-4"></i>
+                <span>Recoverable Capital Benchmark</span>
+              </div>
+              <h3 class="text-slate-300 text-sm font-medium">Projected Annual Cash Savings</h3>
+              <div id="annualSavingsCallout" class="text-4xl sm:text-5xl font-mono font-extrabold text-cyan-400 cyan-glow-text mt-2">
+                $10,801.20
+              </div>
+              <p class="text-xs text-slate-400 mt-2">
+                Based on switching to transparent Interchange + 15 bps + $0.07 with zero junk fees.
+              </p>
+            </div>
+
+            <div class="flex flex-col justify-center space-y-3">
+              <div class="bg-slate-900/80 border border-slate-700/80 rounded-lg p-3 text-right font-mono">
+                <span class="text-[10px] text-slate-400 block uppercase">Target Effective Rate</span>
+                <span id="targetEffectiveRate" class="text-lg font-bold text-emerald-400">2.11%</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button id="copyLetterBtn" class="flex items-center justify-center space-x-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold text-xs sm:text-sm px-4 py-3 rounded-xl shadow-lg shadow-cyan-500/25 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <i data-lucide="copy" class="w-4 h-4"></i>
+                  <span>Copy Demand Letter</span>
+                </button>
+
+                <button id="downloadPdfBtn" class="flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-cyan-300 font-bold text-xs sm:text-sm px-4 py-3 rounded-xl shadow-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <i data-lucide="file-text" class="w-4 h-4 text-cyan-400"></i>
+                  <span>Download PDF Memo</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EMBEDDED MOCK TERMINAL BOX -->
+        <div class="glass-card overflow-hidden border-slate-800">
+          <div class="bg-slate-950 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <div class="w-3 h-3 rounded-full bg-rose-500/80"></div>
+              <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
+              <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+              <span class="ml-2 font-mono text-xs text-slate-400">hermes@console STDOUT</span>
+            </div>
+            <div class="flex items-center space-x-2 text-[10px] font-mono text-cyan-400/80">
+              <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+              <span>POS_PIPELINE.PY</span>
+            </div>
+          </div>
+
+          <div class="p-4 bg-slate-950/90 font-mono text-xs text-slate-300 space-y-2 h-72 overflow-y-auto" id="consoleStdout">
+            <p class="text-slate-500">[SYSTEM INIT] Hermes POS Audit Engine initialized.</p>
+            <p class="text-cyan-400">[+] Step 1: Running Forensic Math Analysis...</p>
+            <p class="text-emerald-400">[+] Step 2: Generating Audit Memo...</p>
+            <div class="border-l-2 border-cyan-500/50 pl-3 my-2 text-slate-400 text-[11px] space-y-0.5">
+              <p>======================================================</p>
+              <p>         MERCHANT PROCESSING SAVINGS AUDIT</p>
+              <p>======================================================</p>
+              <p id="termVol">Current Monthly Volume:   $62,400.00</p>
+              <p id="termSwipes">Total Swipes / Slips:     1,850</p>
+              <p id="termRate">Current Effective Rate:   3.55%</p>
+              <p id="termJunk">Detected Junk Fees:       $99.95/mo</p>
+              <p>------------------------------------------------------</p>
+              <p id="termSavings" class="text-cyan-300 font-bold">PROJECTED ANNUAL CASH SAVINGS: $10,801.20</p>
+              <p id="termVerdict" class="text-amber-400 font-bold">VERDICT: PRIORITY TARGET</p>
+              <p>------------------------------------------------------</p>
+            </div>
+            <p class="text-cyan-400">[+] Step 3: Drafting Retention Demand Letter...</p>
+            <p class="text-slate-400">[!] Demand letter compiled & ready for merchant retention department.</p>
+            <p class="text-emerald-400 font-bold">[✓] PIPELINE EXECUTION COMPLETE.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- INTERNAL PARTNER ROUTING & RESIDUAL FLIGHT DECK (ADMIN GATED // DEFENSE-IN-DEPTH) -->
+    <div id="iso-flight-deck" class="admin-only hidden mt-8 glass-card border border-cyan-500/30 p-6 sm:p-8 space-y-6 bg-gradient-to-br from-obsidian via-slate-950 to-space rounded-2xl relative overflow-hidden">
+      <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Header Bar with Collapse Toggle -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <div class="space-y-1">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="compass" class="w-5 h-5 text-emerald-400"></i>
+            <h3 class="text-lg font-bold text-slate-100 tracking-tight">Internal Partner Routing & Residual Flight Deck</h3>
+            <span class="bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+              CONFIDENTIAL // ISO YIELD OPTIMIZER
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">
+            Live wholesale buy rate, margin spread calculation, and net agent residual yield matching. Excluded from merchant PDF exports.
+          </p>
+        </div>
+
+        <button id="toggleFlightDeckBtn" type="button" class="self-start sm:self-auto bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 font-mono text-xs px-3 py-1.5 rounded-lg flex items-center space-x-2 transition-all">
+          <i data-lucide="chevron-down" id="flightDeckIcon" class="w-4 h-4 text-emerald-400 transition-transform"></i>
+          <span id="flightDeckToggleText">Collapse Deck</span>
+        </button>
+      </div>
+
+      <!-- ISO Cards Container -->
+      <div id="flightDeckContent" class="grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-300">
+        <!-- ISO cards will be dynamically rendered here by recalculate() -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Cyber Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 flex items-center space-x-3 bg-slate-900 border border-cyan-500/50 px-5 py-3.5 rounded-xl shadow-2xl shadow-cyan-500/20 text-cyan-300 font-mono text-xs">
+    <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
+    <span id="toastMsg">Demand letter copied to clipboard!</span>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Utility: HTML Escaper for Print DOM Sanitization
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // DOM Elements - Sliders & Inputs
+    const volumeRange = document.getElementById('volumeRange');
+    const txRange = document.getElementById('txRange');
+    const feesRange = document.getElementById('feesRange');
+    const junkRange = document.getElementById('junkRange');
+
+    const volumeInput = document.getElementById('volumeInput');
+    const txInput = document.getElementById('txInput');
+    const feesInput = document.getElementById('feesInput');
+    const junkInput = document.getElementById('junkInput');
+
+    const effectiveRateDisplay = document.getElementById('effectiveRateDisplay');
+    const processorSpreadDisplay = document.getElementById('processorSpreadDisplay');
+    const annualSavingsCallout = document.getElementById('annualSavingsCallout');
+    const targetEffectiveRate = document.getElementById('targetEffectiveRate');
+
+    const termVol = document.getElementById('termVol');
+    const termSwipes = document.getElementById('termSwipes');
+    const termRate = document.getElementById('termRate');
+    const termJunk = document.getElementById('termJunk');
+    const termSavings = document.getElementById('termSavings');
+    const termVerdict = document.getElementById('termVerdict');
+
+    const copyLetterBtn = document.getElementById('copyLetterBtn');
+    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    const dropzoneInput = document.getElementById('dropzoneInput');
+    const dropzoneDefault = document.getElementById('dropzoneDefault');
+    const dropzoneLoading = document.getElementById('dropzoneLoading');
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+
+    // Admin Mode Check (?admin=true in URL)
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdmin = urlParams.get('admin') === 'true' || window.isAdminUnlocked === true;
+    const flightDeckEl = document.getElementById('iso-flight-deck');
+    if (flightDeckEl && isAdmin) {
+      flightDeckEl.classList.remove('hidden');
+    }
+
+    // ISO Data Model
+    const ISO_PROFILES = {
+      payroc: {
+        name: "Payroc",
+        buyBps: 0.05,       // 5 bps wholesale buy rate
+        buyPerTx: 0.03,     // $0.03 wholesale transaction fee
+        residualSplit: 0.75,// 75% agent residual split
+        badge: "Max Yield / Dual-Pricing",
+        notes: "Optimal for high-ticket trade and professional services with itemized IC+ reporting."
+      },
+      cardconnect_nab: {
+        name: "CardConnect / NAB",
+        buyBps: 0.08,       // 8 bps wholesale buy rate
+        buyPerTx: 0.05,     // $0.05 wholesale transaction fee
+        residualSplit: 0.80,// 80% agent residual split
+        badge: "Hardware & Clover Swap",
+        notes: "Optimal when merchant requires direct Clover reprogramming or legacy terminal re-routing."
+      }
+    };
+
+    function updateFlightDeck(volume, txCount) {
+      const container = document.getElementById('flightDeckContent');
+      if (!container || !isAdmin) return;
+
+      const targetBps = 0.15;      // 0.15% (15 bps)
+      const targetPerTx = 0.07;    // $0.07
+
+      const isoResults = [];
+
+      for (const [key, iso] of Object.entries(ISO_PROFILES)) {
+        const marginBps = Math.max(0, targetBps - iso.buyBps);
+        const marginPerTx = Math.max(0, targetPerTx - iso.buyPerTx);
+
+        const grossMargin = (volume * (marginBps / 100)) + (txCount * marginPerTx);
+        const netMonthly = grossMargin * iso.residualSplit;
+        const netAnnual = netMonthly * 12;
+
+        isoResults.push({
+          key,
+          iso,
+          marginBps,
+          marginPerTx,
+          grossMargin,
+          netMonthly,
+          netAnnual
+        });
+      }
+
+      isoResults.sort((a, b) => b.netMonthly - a.netMonthly);
+
+      const best = isoResults[0];
+      const second = isoResults.length > 1 ? isoResults[1] : null;
+      const deltaMonthly = second ? (best.netMonthly - second.netMonthly) : 0;
+
+      let html = '';
+      isoResults.forEach(item => {
+        const isBest = item.key === best.key;
+        const borderClass = isBest 
+          ? 'border-emerald-500/60 bg-gradient-to-br from-emerald-950/20 via-obsidian to-slate-950 shadow-lg shadow-emerald-500/10' 
+          : 'border-slate-800/80 bg-slate-950/60';
+        
+        const bestTag = isBest 
+          ? `<div class="bg-emerald-500 text-slate-950 text-[10px] font-mono font-extrabold uppercase px-2.5 py-1 rounded-md shadow-md flex items-center gap-1">
+               <i data-lucide="trophy" class="w-3 h-3"></i>
+               Highest Modeled Agent Residual (+ $${deltaMonthly.toFixed(2)}/mo)
+             </div>`
+          : '';
+
+        html += `
+          <div class="glass-card p-5 rounded-xl border ${borderClass} space-y-4 relative">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <div class="flex items-center space-x-2">
+                  <h4 class="text-base font-bold text-white font-mono">${escapeHtml(item.iso.name)}</h4>
+                  <span class="text-[10px] font-mono text-cyan-400 bg-cyan-950/80 border border-cyan-800/50 px-2 py-0.5 rounded">
+                    ${escapeHtml(item.iso.badge)}
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1">${escapeHtml(item.iso.notes)}</p>
+              </div>
+              ${bestTag}
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-800/80 text-xs">
+              <div class="space-y-1">
+                <span class="text-[10px] font-mono text-slate-500 uppercase block">Buy Rate / Wholesale</span>
+                <span class="font-mono text-slate-300 font-semibold">${(item.iso.buyBps * 100).toFixed(0)} bps + $${item.iso.buyPerTx.toFixed(2)}</span>
+              </div>
+              <div class="space-y-1">
+                <span class="text-[10px] font-mono text-slate-500 uppercase block">Proposed Margin Spread</span>
+                <span class="font-mono text-cyan-400 font-semibold">+${(item.marginBps * 100).toFixed(0)} bps + $${item.marginPerTx.toFixed(2)}</span>
+              </div>
+              <div class="space-y-1">
+                <span class="text-[10px] font-mono text-slate-500 uppercase block">Agent Split Share</span>
+                <span class="font-mono text-slate-300 font-semibold">${(item.iso.residualSplit * 100).toFixed(0)}% Split</span>
+              </div>
+              <div class="space-y-1">
+                <span class="text-[10px] font-mono text-slate-500 uppercase block">Gross Margin Pool</span>
+                <span class="font-mono text-slate-300 font-semibold">$${item.grossMargin.toFixed(2)} / mo</span>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between bg-slate-900/50 -mx-5 -mb-5 p-4 rounded-b-xl">
+              <div>
+                <span class="text-[10px] font-mono text-slate-400 uppercase block">Net Agent Residual</span>
+                <span class="text-xl font-mono font-extrabold ${isBest ? 'text-emerald-400' : 'text-slate-200'}">
+                  $${item.netMonthly.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="text-xs font-normal text-slate-400">/ mo</span>
+                </span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] font-mono text-slate-400 uppercase block">Annualized Yield</span>
+                <span class="text-sm font-mono font-bold text-cyan-400">
+                  $${item.netAnnual.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="text-[10px] font-normal text-slate-400">/ yr</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      lucide.createIcons();
+    }
+
+    // Precision Input-Driven Audit Math Engine (Numeric inputs are single source of truth)
+    function recalculate(source = 'input') {
+      // 1. Sync specific range slider to its input if slider moved
+      if (source === 'volumeRange') {
+        const v = Math.max(0, parseFloat(volumeRange.value) || 0);
+        volumeInput.value = v.toFixed(2);
+      } else if (source === 'txRange') {
+        const t = Math.max(0, Math.floor(parseInt(txRange.value) || 0));
+        txInput.value = t;
+      } else if (source === 'feesRange') {
+        const f = Math.max(0, parseFloat(feesRange.value) || 0);
+        feesInput.value = f.toFixed(2);
+      } else if (source === 'junkRange') {
+        const j = Math.max(0, parseFloat(junkRange.value) || 0);
+        junkInput.value = j.toFixed(2);
+      }
+
+      // 2. Read single source of truth from numeric inputs with strict non-negative & integer bounds
+      const parsedVol = parseFloat(volumeInput.value);
+      const volume = (Number.isFinite(parsedVol) && parsedVol >= 0) ? parsedVol : 0;
+
+      const parsedTx = parseInt(txInput.value);
+      const txCount = (Number.isFinite(parsedTx) && parsedTx >= 0) ? Math.floor(parsedTx) : 0;
+
+      const parsedFees = parseFloat(feesInput.value);
+      const fees = (Number.isFinite(parsedFees) && parsedFees >= 0) ? parsedFees : 0;
+
+      const parsedJunk = parseFloat(junkInput.value);
+      const junk = (Number.isFinite(parsedJunk) && parsedJunk >= 0) ? parsedJunk : 0;
+
+      // 3. Keep sliders aligned to inputs if source was typing
+      if (source === 'input') {
+        volumeRange.value = volume;
+        txRange.value = txCount;
+        feesRange.value = fees;
+        junkRange.value = junk;
+      }
+
+      const safeVol = volume > 0 ? volume : 0.01; // Prevent div by zero
+
+      // Calculate Math
+      const effectiveRate = (fees / safeVol) * 100;
+      const interchange = (volume * 0.0175) + (txCount * 0.08);
+      const processorSpread = Math.max(0, fees - interchange);
+
+      // Benchmark IC+ (15 bps + $0.07 / tx)
+      const icPlusMarkup = (volume * 0.0015) + (txCount * 0.07);
+      const icPlusTotal = interchange + icPlusMarkup;
+      const monthlySavings = Math.max(0, fees - icPlusTotal);
+      const annualSavings = monthlySavings * 12;
+      const targetRate = (icPlusTotal / safeVol) * 100;
+
+      // Update Displays
+      effectiveRateDisplay.textContent = `${effectiveRate.toFixed(2)}%`;
+      processorSpreadDisplay.textContent = `$${processorSpread.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      annualSavingsCallout.textContent = `$${annualSavings.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      targetEffectiveRate.textContent = `${targetRate.toFixed(2)}%`;
+
+      // Update Terminal Box
+      if (termVol) termVol.textContent = `Current Monthly Volume:   $${volume.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      if (termSwipes) termSwipes.textContent = `Total Swipes / Slips:     ${txCount.toLocaleString('en-US')}`;
+      if (termRate) termRate.textContent = `Current Effective Rate:   ${effectiveRate.toFixed(2)}%`;
+      if (termJunk) termJunk.textContent = `Detected Junk Fees:       $${junk.toFixed(2)}/mo`;
+      if (termSavings) termSavings.textContent = `PROJECTED ANNUAL CASH SAVINGS: $${annualSavings.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      
+      const verdict = annualSavings > 1500 ? "PRIORITY TARGET" : "STANDARD";
+      if (termVerdict) {
+        termVerdict.textContent = `VERDICT: ${verdict}`;
+        termVerdict.className = verdict === "PRIORITY TARGET" ? "text-amber-400 font-bold" : "text-slate-400 font-bold";
+      }
+
+      // Update Admin Flight Deck
+      updateFlightDeck(volume, txCount);
+    }
+
+    // Isolated Event Listeners for Sliders (Does NOT overwrite other input values)
+    volumeRange.addEventListener('input', () => { window.currentDemandLetter = null; recalculate('volumeRange'); });
+    txRange.addEventListener('input', () => { window.currentDemandLetter = null; recalculate('txRange'); });
+    feesRange.addEventListener('input', () => { window.currentDemandLetter = null; recalculate('feesRange'); });
+    junkRange.addEventListener('input', () => { window.currentDemandLetter = null; recalculate('junkRange'); });
+
+    [volumeInput, txInput, feesInput, junkInput].forEach(input => {
+      input.addEventListener('input', () => {
+        window.currentDemandLetter = null;
+        recalculate('input');
+      });
+    });
+
+    // File Upload Handler with Fail-Safe Reset & Error Handling
+    async function handleFileUpload(file) {
+      if (!file) return;
+      setLoadingState(true);
+      
+      // Clear previous audit state
+      window.currentDemandLetter = null;
+      window.currentBusinessName = null;
+      copyLetterBtn.disabled = true;
+      downloadPdfBtn.disabled = true;
+      copyLetterBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      downloadPdfBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      annualSavingsCallout.textContent = "$0.00";
+      targetEffectiveRate.textContent = "0.00%";
+      if (termSavings) termSavings.textContent = "PROJECTED ANNUAL CASH SAVINGS: $0.00";
+      if (termVerdict) {
+        termVerdict.textContent = "VERDICT: PARSING IN PROGRESS...";
+        termVerdict.className = "text-cyan-400 font-bold";
+      }
+
+      showToast(`Uploading ${file.name} for forensic extraction...`);
+
+      const stdoutEl = document.getElementById('consoleStdout');
+      if (stdoutEl) {
+        stdoutEl.innerText = `[+] Uploading ${file.name}...
+[+] Sending payload to Gemini Vision Forensic Engine...
+[+] Extracting gross volume, swipe count, interchange assessments & junk fees...
+[...] Forensic Math calculation in progress...`;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const res = await fetch('/api/audit/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        const contentType = res.headers.get('content-type') || '';
+        if (!res.ok || contentType.includes('text/html')) {
+          throw new Error("Audit endpoint unavailable — please check backend connection");
+        }
+
+        const json = await res.json();
+        if (json.status === 'success') {
+          // Re-enable export buttons on successful parse
+          copyLetterBtn.disabled = false;
+          downloadPdfBtn.disabled = false;
+          copyLetterBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          downloadPdfBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+          const data = json.data || {};
+          const analysis = json.analysis || data.analysis || {};
+          const ic = analysis.recommendations?.interchange_plus || {};
+
+          // Sync extracted numbers to inputs
+          if (data.gross_processing_volume) {
+            volumeInput.value = Number(data.gross_processing_volume).toFixed(2);
+          }
+          if (data.transaction_count) {
+            txInput.value = Math.floor(Number(data.transaction_count));
+          }
+          if (data.total_fees_charged) {
+            feesInput.value = Number(data.total_fees_charged).toFixed(2);
+          }
+          
+          if (data.cost_breakdown?.ancillary_junk_fees && Array.isArray(data.cost_breakdown.ancillary_junk_fees)) {
+            const junkSum = data.cost_breakdown.ancillary_junk_fees.reduce((sum, item) => sum + (item.amount || 0), 0);
+            junkInput.value = Number(junkSum).toFixed(2);
+          }
+
+          recalculate('input');
+
+          if (ic.annual_savings !== undefined) {
+            annualSavingsCallout.innerText = '$' + Number(ic.annual_savings).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+          }
+          if (ic.estimated_effective_rate_pct !== undefined) {
+            targetEffectiveRate.innerText = Number(ic.estimated_effective_rate_pct).toFixed(2) + '%';
+          }
+
+          if (stdoutEl && json.stdout) {
+            stdoutEl.innerText = json.stdout;
+          }
+
+          if (json.demand_letter) {
+            window.currentDemandLetter = json.demand_letter;
+          }
+          if (data.business_name) {
+            window.currentBusinessName = data.business_name;
+          }
+
+          showToast(`Audit Complete: ${data.business_name || file.name}`);
+        } else {
+          throw new Error(json.detail || "Parse Failed");
+        }
+      } catch (err) {
+        const errMsg = err.message || "Audit endpoint unavailable — please check backend connection";
+        showToast(errMsg);
+        if (stdoutEl) {
+          stdoutEl.innerText = `[ERROR] ${errMsg}`;
+        }
+        // Fail-safe state: keep export buttons disabled and do not crash on undefined variables
+        annualSavingsCallout.textContent = "$0.00";
+        if (termSavings) termSavings.textContent = "PROJECTED ANNUAL CASH SAVINGS: $0.00";
+        if (termVerdict) {
+          termVerdict.textContent = "VERDICT: ENDPOINT UNAVAILABLE";
+          termVerdict.className = "text-rose-400 font-bold";
+        }
+        copyLetterBtn.disabled = true;
+        downloadPdfBtn.disabled = true;
+        copyLetterBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        downloadPdfBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      } finally {
+        setLoadingState(false);
+      }
+    }
+
+    function setLoadingState(loading) {
+      if (loading) {
+        dropzoneDefault.classList.add('hidden');
+        dropzoneLoading.classList.remove('hidden');
+      } else {
+        dropzoneDefault.classList.remove('hidden');
+        dropzoneLoading.classList.add('hidden');
+      }
+    }
+
+    // Dropzone Input & Drag-and-Drop Handlers
+    dropzoneInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        handleFileUpload(e.target.files[0]);
+      }
+    });
+
+    const dropzoneCard = dropzoneInput ? dropzoneInput.parentElement : null;
+    if (dropzoneCard) {
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropzoneCard.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzoneCard.classList.add('border-cyan-400', 'bg-cyan-950/20');
+        }, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropzoneCard.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzoneCard.classList.remove('border-cyan-400', 'bg-cyan-950/20');
+        }, false);
+      });
+
+      dropzoneCard.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt ? dt.files : null;
+        if (files && files.length > 0) {
+          handleFileUpload(files[0]);
+        }
+      });
+    }
+
+    // Copy Demand Letter Functionality
+    copyLetterBtn.addEventListener('click', async () => {
+      if (copyLetterBtn.disabled) return;
+      let letterText = window.currentDemandLetter;
+
+      if (!letterText) {
+        const parsedVol = parseFloat(volumeInput.value);
+        const volume = Number.isFinite(parsedVol) ? parsedVol : 0;
+        const parsedFees = parseFloat(feesInput.value);
+        const fees = Number.isFinite(parsedFees) ? parsedFees : 0;
+        const parsedJunk = parseFloat(junkInput.value);
+        const junk = Number.isFinite(parsedJunk) ? parsedJunk : 0;
+        const parsedTx = parseInt(txInput.value);
+        const txCount = Number.isFinite(parsedTx) ? parsedTx : 0;
+
+        const effectiveRate = volume > 0 ? ((fees / volume) * 100).toFixed(2) : "0.00";
+        const interchange = (volume * 0.0175) + (txCount * 0.08);
+        const spread = Math.max(0, fees - interchange).toFixed(2);
+        const icPlusTotal = interchange + (volume * 0.0015) + (txCount * 0.07);
+        const annualSavings = Math.max(0, (fees - icPlusTotal) * 12).toFixed(2);
+        const merchant = window.currentBusinessName || "[Merchant Principal]";
+
+        letterText = `
+To: Merchant Account Retention / Pricing Department
+From: ${merchant}
+Re: Notice of Processing Cost Review & Rate Match Request
+
+We have completed an independent forensic audit of our recent merchant processing statements. 
+Our current effective rate has climbed to ${effectiveRate}%, representing a processor spread 
+of $${parseFloat(spread).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}/mo over baseline interchange on $${volume.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} in volume.
+
+Specifically, we have flagged non-negotiable fee concerns including:
+  - Ancillary junk fee surcharges & PCI non-compliance fees: $${junk.toFixed(2)}/mo
+  - Elevated non-qualified tier margins and padded transaction surcharges
+
+We are formally requesting a transparent line-item fee breakdown and rate adjustment to match competitive Interchange-Plus benchmark terms:
+  - Interchange + 0.15% (15 bps) + $0.07 per transaction
+  - $0.00 ancillary statement/portal/PCI non-compliance fees
+  - Projected annual cost reduction: $${parseFloat(annualSavings).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+
+We prefer to avoid the operational friction of reprogramming our terminals and re-routing batch settlements to a new acquiring partner. However, we require an immediate adjustment to match transparent Interchange-Plus terms and waive all assessed junk fees.
+
+Please confirm in writing within 5 business days whether your office will adjust our schedule, or provide the formal cancellation procedures for our account.
+
+Sincerely,
+${merchant} Management
+`.trim();
+      }
+
+      try {
+        await navigator.clipboard.writeText(letterText);
+        showToast("Demand Letter copied to clipboard!");
+      } catch (e) {
+        const ta = document.createElement("textarea");
+        ta.value = letterText;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showToast("Demand Letter copied to clipboard!");
+      }
+    });
+
+    // Download PDF Demand Letter Functionality (Sanitized DOM Print Iframe with Safe Failovers)
+    if (downloadPdfBtn) {
+      downloadPdfBtn.addEventListener('click', () => {
+        if (downloadPdfBtn.disabled) return;
+        let letterText = window.currentDemandLetter;
+        let bizName = window.currentBusinessName || "";
+
+        if (!letterText) {
+          const parsedVol = parseFloat(volumeInput.value);
+          const volume = Number.isFinite(parsedVol) ? parsedVol : 25000;
+          const parsedFees = parseFloat(feesInput.value);
+          const fees = Number.isFinite(parsedFees) ? parsedFees : 850;
+          const parsedJunk = parseFloat(junkInput.value);
+          const junk = Number.isFinite(parsedJunk) ? parsedJunk : 125;
+          const parsedTx = parseInt(txInput.value);
+          const txCount = Number.isFinite(parsedTx) ? parsedTx : 320;
+
+          const effectiveRate = volume > 0 ? ((fees / volume) * 100).toFixed(2) : "0.00";
+          const interchange = (volume * 0.0175) + (txCount * 0.08);
+          const spread = Math.max(0, fees - interchange).toFixed(2);
+          const icPlusTotal = interchange + (volume * 0.0015) + (txCount * 0.07);
+          const annualSavings = Math.max(0, (fees - icPlusTotal) * 12).toFixed(2);
+          const merchant = bizName || "[Merchant Business]";
+
+          letterText = `To: Merchant Account Retention / Pricing Department\nFrom: ${merchant}\nRe: Notice of Processing Cost Review & Rate Match Request\n\nWe have completed an independent forensic audit of our recent merchant processing statements.\nOur current effective rate has climbed to ${effectiveRate}%, representing a processor spread of $${parseFloat(spread).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}/mo over baseline interchange on $${volume.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} in volume.\n\nSpecifically, we have flagged non-negotiable fee concerns including:\n  - Ancillary junk fee surcharges & PCI non-compliance fees: $${parseFloat(junk).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}/mo\n  - Elevated non-qualified tier margins and padded transaction surcharges\n\nWe are formally requesting a transparent line-item fee breakdown and rate adjustment to match competitive Interchange-Plus benchmark terms:\n  - Interchange + 0.15% (15 bps) + $0.07 per transaction\n  - $0.00 ancillary statement/portal/PCI non-compliance fees\n  - Projected annual cost reduction: $${parseFloat(annualSavings).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}\n\nWe prefer to avoid the operational friction of reprogramming our terminals and re-routing batch settlements to a new acquiring partner. However, we require an immediate adjustment to match transparent Interchange-Plus terms and waive all assessed junk fees.\n\nPlease confirm in writing within 5 business days whether your office will adjust our schedule, or provide the formal cancellation procedures for our account.\n\nSincerely,\n${merchant} Management`;
+        }
+
+        let toText = "Merchant Account Retention / Pricing Department";
+        let fromText = bizName || "Merchant Principal";
+        let reText = "Notice of Processing Cost Review & Rate Match Request";
+
+        const lines = letterText.split('\n');
+        const bodyElements = [];
+        let inSignature = false;
+
+        for (let i = 0; i < lines.length; i++) {
+          const rawLine = lines[i];
+          const trimmed = rawLine.trim();
+          if (!trimmed) continue;
+
+          if (trimmed.startsWith('To:')) {
+            toText = trimmed.replace(/^To:\s*/, '').trim() || toText;
+            continue;
+          }
+          if (trimmed.startsWith('From:')) {
+            fromText = trimmed.replace(/^From:\s*/, '').trim() || fromText;
+            continue;
+          }
+          if (trimmed.startsWith('Re:')) {
+            reText = trimmed.replace(/^Re:\s*/, '').trim() || reText;
+            continue;
+          }
+
+          if (trimmed.startsWith('Sincerely,') || trimmed.endsWith('Management')) {
+            inSignature = true;
+            continue;
+          }
+          if (inSignature) continue;
+
+          if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
+            const bulletContent = escapeHtml(trimmed.replace(/^[\s\-•]+/, '').trim());
+            bodyElements.push(`
+              <div class="bullet-item">
+                <span class="bullet-dot">•</span>
+                <span>${bulletContent}</span>
+              </div>
+            `);
+          } else if (trimmed.includes('5 business days') || trimmed.includes('confirm in writing')) {
+            bodyElements.push(`
+              <div class="notice-box">
+                ${escapeHtml(trimmed)}
+              </div>
+            `);
+          } else {
+            bodyElements.push(`
+              <p>
+                ${escapeHtml(trimmed)}
+              </p>
+            `);
+          }
+        }
+
+        const dateStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+
+        document.body.appendChild(iframe);
+
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Demand Letter - ${escapeHtml(fromText)}</title>
+            <style>
+              @page {
+                size: letter portrait;
+                margin: 0.5in;
+              }
+              body {
+                font-family: "Helvetica Neue", Arial, sans-serif;
+                color: #000000;
+                background: #ffffff;
+                margin: 0;
+                padding: 0;
+                line-height: 1.5;
+                font-size: 11pt;
+              }
+              h1 {
+                font-size: 18pt;
+                font-weight: 800;
+                margin: 0 0 4pt 0;
+                text-transform: uppercase;
+                color: #000000;
+                letter-spacing: -0.5px;
+              }
+              .subtitle {
+                font-size: 9.5pt;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: #333333;
+                margin: 0;
+              }
+              .badge {
+                display: inline-block;
+                border: 1.5pt solid #000000;
+                color: #000000;
+                font-weight: 800;
+                font-size: 8.5pt;
+                padding: 3pt 8pt;
+                text-transform: uppercase;
+              }
+              .header-rule {
+                border-bottom: 2pt solid #000000;
+                padding-bottom: 10pt;
+                margin-bottom: 14pt;
+              }
+              .details-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 14pt;
+                background: #f8f8f8;
+                border: 1pt solid #cccccc;
+              }
+              .details-table td {
+                padding: 5pt 8pt;
+                font-size: 10pt;
+                color: #000000;
+              }
+              .details-table .label {
+                font-weight: 800;
+                width: 60pt;
+              }
+              p {
+                margin: 8pt 0;
+                font-size: 10.5pt;
+                line-height: 1.5;
+                color: #000000;
+                text-align: justify;
+              }
+              .bullet-item {
+                margin: 4pt 0 4pt 14pt;
+                font-size: 10.5pt;
+                line-height: 1.4;
+                color: #000000;
+                display: flex;
+                align-items: flex-start;
+              }
+              .bullet-dot {
+                font-weight: bold;
+                margin-right: 6pt;
+              }
+              .notice-box {
+                border-left: 3.5pt solid #000000;
+                background: #f0f0f0;
+                padding: 8pt 10pt;
+                margin: 12pt 0;
+                font-weight: 700;
+                font-size: 10.5pt;
+                color: #000000;
+              }
+              .signature-block {
+                margin-top: 20pt;
+                padding-top: 10pt;
+                border-top: 1pt solid #000000;
+                page-break-inside: avoid;
+              }
+              .footer {
+                margin-top: 20pt;
+                padding-top: 6pt;
+                border-top: 1pt solid #cccccc;
+                font-size: 8pt;
+                color: #666666;
+                text-align: center;
+              }
+              @media print {
+                body {
+                  width: 100%;
+                  overflow: visible !important;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="header-rule">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td>
+                    <h1>Merchant Account Retention Demand</h1>
+                    <p class="subtitle">Forensic Rate Audit & Rate Match Request</p>
+                  </td>
+                  <td style="text-align: right; vertical-align: top;">
+                    <span class="badge">FORMAL RATE NOTICE</span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <table class="details-table">
+              <tr><td class="label">TO:</td><td>${escapeHtml(toText)}</td></tr>
+              <tr><td class="label">FROM:</td><td>${escapeHtml(fromText)}</td></tr>
+              <tr><td class="label">DATE:</td><td>${escapeHtml(dateStr)}</td></tr>
+              <tr><td class="label">RE:</td><td><strong>${escapeHtml(reText)}</strong></td></tr>
+            </table>
+
+            <div style="margin-bottom: 14pt;">
+              ${bodyElements.join('')}
+            </div>
+
+            <div class="signature-block">
+              <p style="margin: 0 0 12pt 0; font-weight: 600;">Sincerely,</p>
+              <div style="font-size: 12pt; font-weight: 800;">${escapeHtml(fromText)} Management</div>
+              <div style="font-size: 9pt; color: #333333; margin-top: 2pt;">Authorized Account Executive / Merchant Principal</div>
+            </div>
+
+            <div class="footer">
+              CONFIDENTIAL // Generated via Aether Hermes Forensic Merchant Processing Audit Engine
+            </div>
+          </body>
+          </html>
+        `);
+        doc.close();
+
+        setTimeout(() => {
+          try {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+            showToast("Native Print Dialogue Opened");
+          } catch (e) {
+            console.error("Native print dialogue failed:", e);
+            showToast("Print failed — please check browser permissions");
+          } finally {
+            setTimeout(() => {
+              if (document.body.contains(iframe)) {
+                document.body.removeChild(iframe);
+              }
+            }, 2000);
+          }
+        }, 250);
+      });
+    }
+
+    // Collapsible Flight Deck Handler
+    const toggleFlightDeckBtn = document.getElementById('toggleFlightDeckBtn');
+    const flightDeckContent = document.getElementById('flightDeckContent');
+    const flightDeckIcon = document.getElementById('flightDeckIcon');
+    const flightDeckToggleText = document.getElementById('flightDeckToggleText');
+
+    if (toggleFlightDeckBtn && flightDeckContent) {
+      toggleFlightDeckBtn.addEventListener('click', () => {
+        const isHidden = flightDeckContent.classList.contains('hidden');
+        if (isHidden) {
+          flightDeckContent.classList.remove('hidden');
+          if (flightDeckIcon) flightDeckIcon.style.transform = 'rotate(0deg)';
+          if (flightDeckToggleText) flightDeckToggleText.textContent = 'Collapse Deck';
+        } else {
+          flightDeckContent.classList.add('hidden');
+          if (flightDeckIcon) flightDeckIcon.style.transform = 'rotate(-90deg)';
+          if (flightDeckToggleText) flightDeckToggleText.textContent = 'Expand Deck';
+        }
+      });
+    }
+
+    function showToast(message) {
+      toastMsg.textContent = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    recalculate('input');
+  </script>
+</body>
+</html>
