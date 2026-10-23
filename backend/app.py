@@ -28,7 +28,9 @@ Analyze the attached merchant processing statement (PDF or image).
 
 Parsing & Extraction Instructions:
 1. Locate the summary ledger (Total Gross Amount Submitted / Total Volume, Total Transactions, Total Fees / Charges).
-2. If multiple merchant accounts exist in one PDF/statement, extract the overall campus/business total across all accounts.
+2. For multi-account or multi-location statements (e.g. First Data, Clover, Wells Fargo, Heartland, Chase Paymentech):
+   - Explicitly locate and sum the "Total Fees Charged", "Service Charges", "Interchange Charges", or "Total Amount Debited" across ALL merchant IDs and sub-accounts in the PDF.
+   - Sum the total gross volume across all sub-accounts.
 3. Identify all itemized junk fees / ancillary fees, specifically looking for:
    - PCI non-compliance or PCI validation fees
    - Statement delivery or paper statement fees
@@ -60,6 +62,34 @@ Rules:
 - Ensure junk_fee_items is a list of objects with "description" (str) and "amount" (float).
 - Do NOT wrap in markdown code blocks or return any text outside the valid JSON object.
 """
+
+def generate_with_fallback(client, part, prompt):
+    model_candidates = ["gemini-2.5-flash", "gemini-3.6-flash", "gemini-3.8-flash", "gemini-flash-latest"]
+    for model_name in model_candidates:
+        try:
+            logger.info(f"Attempting Gemini call with model: {model_name}")
+            response = client.models.generate_content(
+                model=model_name,
+                contents=[part, prompt],
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json"
+                )
+            )
+            if response and response.text:
+                return response.text.strip(), model_name
+        except Exception as ex:
+            logger.warning(f"Model {model_name} failed: {ex}")
+    return None, None
+
+def parse_json_response(raw_text):
+    if not raw_text:
+        return {}
+    cleaned = raw_text.strip()
+    if cleaned.startswith("```"):
+        cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
+        cleaned = re.sub(r"\s*```$", "", cleaned)
+        cleaned = cleaned.strip()
+    return json.loads(cleaned)
 
 @app.route("/health", methods=["GET"])
 @app.route("/api/audit/health", methods=["GET"])
@@ -101,42 +131,15 @@ def audit_upload():
         client = get_genai_client()
         part = types.Part.from_bytes(data=file_bytes, mime_type=mime_type)
 
-        model_candidates = ["gemini-2.5-flash", "gemini-3.6-flash", "gemini-3.8-flash", "gemini-flash-latest"]
-        response = None
-        last_err = None
+        raw_text, used_model = generate_with_fallback(client, part, SYSTEM_PROMPT)
+        if not raw_text:
+            return jsonify({"error": "Failed to get response from Gemini Vision models"}), 500
 
-        for model_name in model_candidates:
-            try:
-                logger.info(f"Attempting Gemini extraction with model: {model_name}")
-                response = client.models.generate_content(
-                    model=model_name,
-                    contents=[part, SYSTEM_PROMPT],
-                    config=types.GenerateContentConfig(
-                        response_mime_type="application/json"
-                    )
-                )
-                if response and response.text:
-                    logger.info(f"Successfully received response using model: {model_name}")
-                    break
-            except Exception as ex:
-                logger.warning(f"Model {model_name} failed: {ex}")
-                last_err = ex
-
-        if not response or not response.text:
-            return jsonify({"error": f"Failed to get response from Gemini Vision model: {str(last_err)}"}), 500
-
-        raw_text = response.text.strip()
-        if raw_text.startswith("```"):
-            raw_text = re.sub(r"^```(?:json)?\s*", "", raw_text)
-            raw_text = re.sub(r"\s*```$", "", raw_text)
-            raw_text = raw_text.strip()
-
-        data = json.loads(raw_text)
+        data = parse_json_response(raw_text)
 
         volume = float(data.get("volume") or 0.0)
         transactions = int(data.get("transactions") or 0)
         total_fees = float(data.get("total_fees") or 0.0)
-        ancillary_fees = float(data.get("ancillary_fees") or 0.0)
         processor_name = str(data.get("processor_name") or "Unknown")
         statement_period = str(data.get("statement_period") or "Unknown")
         merchant_name = str(data.get("merchant_name") or "Unknown")
@@ -149,19 +152,50 @@ def audit_upload():
                 amt = float(item.get("amount") or 0.0)
                 junk_fee_items.append({"description": desc, "amount": amt})
 
-        calculated_junk_sum = round(sum(item["amount"] for item in junk_fee_items), 2)
-        ancillary_fees = calculated_junk_sum
+        # Sanity Validation Second Pass if volume > 1000 and total_fees == 0
+        if volume > 1000.0 and total_fees == 0.0:
+            logger.warning(f"Sanity alert: Volume is ${volume:,.2f} but total_fees is $0.00. Executing second-pass fee search.")
+            second_pass_prompt = f"""URGENT FORENSIC AUDIT RE-PARSING INSTRUCTION:
+Gross volume was detected as ${volume:,.2f}, but Total Fees was extracted as $0.00.
+Re-examine every page of the attached statement specifically targeting lines labeled:
+- "TOTAL FEES"
+- "TOTAL FEES CHARGED"
+- "SERVICE CHARGES / INTERCHANGE CHARGES"
+- "TOTAL AMOUNT DEBITED"
+- "FEES PAID / CHARGED"
+Return the complete updated JSON object with the exact total fees numeric value.
+"""
+            raw_text_2, _ = generate_with_fallback(client, part, second_pass_prompt)
+            if raw_text_2:
+                data2 = parse_json_response(raw_text_2)
+                fees2 = float(data2.get("total_fees") or 0.0)
+                if fees2 > 0:
+                    logger.info(f"Second pass successfully located total_fees: ${fees2:,.2f}")
+                    total_fees = fees2
+                    if not junk_fee_items and data2.get("junk_fee_items"):
+                        junk_fee_items = [{"description": str(i.get("description") or "Junk Fee"), "amount": float(i.get("amount") or 0.0)} for i in data2["junk_fee_items"] if isinstance(i, dict)]
 
+        calculated_junk_sum = round(sum(item["amount"] for item in junk_fee_items), 2)
+        
         effective_rate = float(data.get("effective_rate") or 0.0)
         if effective_rate == 0.0 and volume > 0 and total_fees > 0:
             effective_rate = round((total_fees / volume) * 100, 2)
 
         processor_spread = round(max(0.0, total_fees - calculated_junk_sum), 2)
+        
+        status_flag = "success"
+        warning_msg = None
+        if volume > 1000.0 and total_fees == 0.0:
+            status_flag = "partial_extraction"
+            warning_msg = "Volume detected but total fees could not be parsed automatically. Please review fee summary on statement."
 
         analysis_text = f"Audited {statement_period} statement for {merchant_name}. Identified {len(junk_fee_items)} ancillary junk line items totaling ${calculated_junk_sum:,.2f}."
+        if warning_msg:
+            analysis_text += f" [WARNING: {warning_msg}]"
 
         result = {
-            "status": "success",
+            "status": status_flag,
+            "warning": warning_msg,
             "merchant_name": merchant_name,
             "processor_name": processor_name,
             "statement_period": statement_period,

@@ -650,11 +650,22 @@
         termVerdict.className = "text-cyan-400 font-bold";
       }
 
+      // State cleansing: reset all display fields and state variables to 0 before fetch call
+      volumeInput.value = "0.00";
+      txInput.value = "0";
+      feesInput.value = "0.00";
+      junkInput.value = "0.00";
+      annualSavingsCallout.innerText = "$0.00";
+      fiveYearSavingsCallout.innerText = "$0.00";
+      junkFeesSum.innerText = "$0.00";
+      effectiveRateMetric.innerText = "0.00%";
+
       showToast(`Uploading ${file.name} for forensic extraction...`);
 
       const stdoutEl = document.getElementById('consoleStdout');
       if (stdoutEl) {
         stdoutEl.innerText = `[+] Uploading ${file.name}...
+[+] Cleared state fields & reset legacy numbers...
 [+] Sending payload to Gemini Vision Forensic Engine...
 [+] Extracting gross volume, swipe count, interchange assessments & junk fees...
 [...] Forensic Math calculation in progress...`;
@@ -676,34 +687,41 @@
         }
 
         const json = await res.json();
-        if (json.status === 'success') {
-          // Re-enable export buttons on successful parse
+        if (json.status === 'success' || json.status === 'partial_extraction') {
+          // Re-enable export buttons
           copyLetterBtn.disabled = false;
           downloadPdfBtn.disabled = false;
           copyLetterBtn.classList.remove('opacity-50', 'cursor-not-allowed');
           downloadPdfBtn.classList.remove('opacity-50', 'cursor-not-allowed');
 
           const data = json.data || {};
-          const analysis = json.analysis || data.analysis || {};
-          const ic = analysis.recommendations?.interchange_plus || {};
+          const vol = json.volume ?? data.gross_processing_volume;
+          const tx = json.transactions ?? data.transaction_count;
+          const fees = json.total_fees ?? data.total_fees_charged;
+          const junk = json.cost_breakdown?.ancillary_junk_fees ?? data.cost_breakdown?.ancillary_junk_fees ?? json.ancillary_fees ?? data.ancillary_fees;
 
-          // Sync extracted numbers to inputs
-          if (data.gross_processing_volume) {
-            volumeInput.value = Number(data.gross_processing_volume).toFixed(2);
+          // Sync extracted numbers to inputs with explicit null checks
+          if (vol != null && !isNaN(Number(vol))) {
+            volumeInput.value = Number(vol).toFixed(2);
           }
-          if (data.transaction_count) {
-            txInput.value = Math.floor(Number(data.transaction_count));
+          if (tx != null && !isNaN(Number(tx))) {
+            txInput.value = Math.floor(Number(tx)).toString();
           }
-          if (data.total_fees_charged) {
-            feesInput.value = Number(data.total_fees_charged).toFixed(2);
+          if (fees != null && !isNaN(Number(fees))) {
+            feesInput.value = Number(fees).toFixed(2);
           }
-          
-          if (data.cost_breakdown?.ancillary_junk_fees && Array.isArray(data.cost_breakdown.ancillary_junk_fees)) {
-            const junkSum = data.cost_breakdown.ancillary_junk_fees.reduce((sum, item) => sum + (item.amount || 0), 0);
-            junkInput.value = Number(junkSum).toFixed(2);
+          if (junk != null && !isNaN(Number(junk))) {
+            junkInput.value = Number(junk).toFixed(2);
           }
 
           recalculate('input');
+
+          if (Number(feesInput.value) === 0 && Number(volumeInput.value) > 0) {
+            showToast("⚠️ Warning: Volume detected but Total Fees extracted as $0.00. Manual review recommended.");
+            if (stdoutEl) {
+              stdoutEl.innerText += "\n[!] ALERT: Total fees extracted as $0.00 for active volume. Please verify fee summary on statement.";
+            }
+          }
 
           if (ic.annual_savings !== undefined) {
             annualSavingsCallout.innerText = '$' + Number(ic.annual_savings).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
