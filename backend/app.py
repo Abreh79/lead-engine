@@ -1,4 +1,5 @@
 import os
+import io
 import json
 import re
 import logging
@@ -6,6 +7,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from google import genai
 from google.genai import types
+from pypdf import PdfReader, PdfWriter
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("pos-audit-engine")
@@ -127,6 +129,22 @@ def audit_upload():
             mime_type = content_type
 
         logger.info(f"Processing uploaded file '{file_obj.filename}' ({len(file_bytes)} bytes, mime_type={mime_type})")
+
+        if mime_type == "application/pdf":
+            try:
+                reader = PdfReader(io.BytesIO(file_bytes))
+                total_pages = len(reader.pages)
+                if total_pages > 5:
+                    logger.info(f"PDF contains {total_pages} pages. Trimming to first 5 pages for processing summary extraction.")
+                    writer = PdfWriter()
+                    for i in range(min(5, total_pages)):
+                        writer.add_page(reader.pages[i])
+                    out_buf = io.BytesIO()
+                    writer.write(out_buf)
+                    file_bytes = out_buf.getvalue()
+                    logger.info(f"Trimmed PDF size: {len(file_bytes)} bytes across 5 pages.")
+            except Exception as pdf_err:
+                logger.warning(f"pypdf slicing warning: {pdf_err}. Proceeding with original file bytes.")
 
         client = get_genai_client()
         part = types.Part.from_bytes(data=file_bytes, mime_type=mime_type)
