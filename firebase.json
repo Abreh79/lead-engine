@@ -1,0 +1,18 @@
+{
+  "hosting": {
+    "public": "dist",
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/contractor_os_hub.html",
+        "destination": "/contractor-os.html"
+      }
+    ]
+  }
+}
