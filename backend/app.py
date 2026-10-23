@@ -149,34 +149,47 @@ def audit_upload():
                 amt = float(item.get("amount") or 0.0)
                 junk_fee_items.append({"description": desc, "amount": amt})
 
-        if not ancillary_fees and junk_fee_items:
-            ancillary_fees = sum(item["amount"] for item in junk_fee_items)
+        calculated_junk_sum = round(sum(item["amount"] for item in junk_fee_items), 2)
+        ancillary_fees = calculated_junk_sum
 
         effective_rate = float(data.get("effective_rate") or 0.0)
         if effective_rate == 0.0 and volume > 0 and total_fees > 0:
             effective_rate = round((total_fees / volume) * 100, 2)
 
+        processor_spread = round(max(0.0, total_fees - calculated_junk_sum), 2)
+
+        analysis_text = f"Audited {statement_period} statement for {merchant_name}. Identified {len(junk_fee_items)} ancillary junk line items totaling ${calculated_junk_sum:,.2f}."
+
         result = {
             "status": "success",
-            "volume": volume,
-            "transactions": transactions,
-            "total_fees": total_fees,
-            "ancillary_fees": ancillary_fees,
-            "effective_rate": effective_rate,
+            "merchant_name": merchant_name,
             "processor_name": processor_name,
             "statement_period": statement_period,
-            "merchant_name": merchant_name,
+            "volume": float(volume),
+            "transactions": int(transactions),
+            "total_fees": float(total_fees),
+            "effective_rate": float(effective_rate),
+            "cost_breakdown": {
+                "ancillary_junk_fees": float(calculated_junk_sum),
+                "processor_spread": float(processor_spread)
+            },
             "junk_fee_items": junk_fee_items,
+            "analysis": analysis_text,
+            "ancillary_fees": float(calculated_junk_sum),
             "data": {
-                "gross_processing_volume": volume,
-                "transaction_count": transactions,
-                "total_fees_charged": total_fees,
-                "ancillary_fees": ancillary_fees,
-                "effective_rate": effective_rate,
+                "gross_processing_volume": float(volume),
+                "transaction_count": int(transactions),
+                "total_fees_charged": float(total_fees),
+                "ancillary_fees": float(calculated_junk_sum),
+                "effective_rate": float(effective_rate),
                 "processor_name": processor_name,
                 "statement_period": statement_period,
                 "merchant_name": merchant_name,
-                "junk_fees": junk_fee_items
+                "junk_fees": junk_fee_items,
+                "cost_breakdown": {
+                    "ancillary_junk_fees": float(calculated_junk_sum),
+                    "processor_spread": float(processor_spread)
+                }
             }
         }
 
