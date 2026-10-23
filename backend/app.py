@@ -11,7 +11,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("pos-audit-engine")
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {
+    "origins": ["https://studio-7106835876-c5253.web.app", "http://localhost:8080", "*"],
+    "methods": ["GET", "POST", "OPTIONS"],
+    "allow_headers": ["Content-Type", "Authorization", "X-Requested-With", "Accept"]
+}})
 
 def get_genai_client():
     api_key = os.environ.get("GEMINI_API_KEY")
