@@ -655,10 +655,10 @@
       txInput.value = "0";
       feesInput.value = "0.00";
       junkInput.value = "0.00";
-      annualSavingsCallout.innerText = "$0.00";
-      fiveYearSavingsCallout.innerText = "$0.00";
-      junkFeesSum.innerText = "$0.00";
-      effectiveRateMetric.innerText = "0.00%";
+      if (typeof annualSavingsCallout !== 'undefined' && annualSavingsCallout) annualSavingsCallout.innerText = "$0.00";
+      if (typeof fiveYearSavingsCallout !== 'undefined' && fiveYearSavingsCallout) fiveYearSavingsCallout.innerText = "$0.00";
+      if (typeof junkFeesSum !== 'undefined' && junkFeesSum) junkFeesSum.innerText = "$0.00";
+      if (typeof effectiveRateMetric !== 'undefined' && effectiveRateMetric) effectiveRateMetric.innerText = "0.00%";
 
       showToast(`Uploading ${file.name} for forensic extraction...`);
 
@@ -675,7 +675,7 @@
       formData.append('file', file);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 45000);
+      const timeoutId = setTimeout(() => controller.abort(), 180000);
 
       try {
         const apiEndpoint = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8080/api/audit/upload' : 'https://pos-audit-engine-gknqcwabza-uc.a.run.app/api/audit/upload';
@@ -728,6 +728,7 @@
             }
           }
 
+          const ic = json.interchange_summary || data.interchange_summary || {};
           if (ic.annual_savings !== undefined) {
             annualSavingsCallout.innerText = '$' + Number(ic.annual_savings).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
           }
@@ -756,12 +757,12 @@
         const errMsg = isAbort ? "[NOTICE] Upload timed out. Please verify connectivity or enter summary figures manually." : (err.message || "Audit endpoint unavailable — please check backend connection");
         showToast(errMsg);
         if (stdoutEl) {
-          stdoutEl.innerText = isAbort ? `[NOTICE] Upload timed out after 45 seconds. Please verify connectivity or enter summary figures manually.` : `[ERROR] ${errMsg}`;
+          stdoutEl.innerText = isAbort ? `[NOTICE] Upload timed out after 180 seconds. Please verify connectivity or enter summary figures manually.` : `[ERROR] ${errMsg}`;
         }
         // Fail-safe state: keep export buttons disabled and do not crash on undefined variables
-        annualSavingsCallout.textContent = "$0.00";
-        if (termSavings) termSavings.textContent = "PROJECTED ANNUAL CASH SAVINGS: $0.00";
-        if (termVerdict) {
+        if (typeof annualSavingsCallout !== 'undefined' && annualSavingsCallout) annualSavingsCallout.textContent = "$0.00";
+        if (typeof termSavings !== 'undefined' && termSavings) termSavings.textContent = "PROJECTED ANNUAL CASH SAVINGS: $0.00";
+        if (typeof termVerdict !== 'undefined' && termVerdict) {
           termVerdict.textContent = "VERDICT: ENDPOINT UNAVAILABLE";
           termVerdict.className = "text-rose-400 font-bold";
         }
